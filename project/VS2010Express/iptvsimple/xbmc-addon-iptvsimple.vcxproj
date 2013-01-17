@@ -38,26 +38,26 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\addons\pvr.iptvsimple\</OutDir>
+    <OutDir>..\..\..\addons\pvr.iptvsimple\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>XBMC_IPTV_Simple_win32</TargetName>
-    <IncludePath>..\..\include\xbmc;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\include\xbmc;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\..\addons\pvr.iptvsimple\</OutDir>
+    <OutDir>..\..\..\addons\pvr.iptvsimple\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>XBMC_IPTV_Simple_win32</TargetName>
-    <IncludePath>..\..\include\xbmc;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\include\xbmc;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\include;..\..\src;..\..\src\platform\windows</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\..\src;..\..\..\src\platform\windows</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;_USE_32BIT_TIME_T;_WINSOCKAPI_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -73,7 +73,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\include;..\..\src;..\..\src\platform\windows</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\include;..\..\..\src;..\..\..\src\platform\windows</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;_USE_32BIT_TIME_T;_WINSOCKAPI_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
@@ -82,22 +82,22 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\Work\Custom\xbmc-pvr-addons\project\BuildDependencies\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\iptvsimple\client.cpp" />
-    <ClCompile Include="..\..\src\iptvsimple\PVRDemoData.cpp" />
+    <ClCompile Include="..\..\..\src\iptvsimple\client.cpp" />
+    <ClCompile Include="..\..\..\src\iptvsimple\PVRDemoData.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\iptvsimple\client.h" />
-    <ClInclude Include="..\..\src\iptvsimple\PVRDemoData.h" />
+    <ClInclude Include="..\..\..\src\iptvsimple\client.h" />
+    <ClInclude Include="..\..\..\src\iptvsimple\PVRDemoData.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="platform\platform.vcxproj">
+    <ProjectReference Include="..\platform\platform.vcxproj">
       <Project>{fe4573f6-a794-4ad3-b37f-49e51f1140e6}</Project>
     </ProjectReference>
-    <ProjectReference Include="tinyxml\tinyxml.vcxproj">
+    <ProjectReference Include="..\tinyxml\tinyxml.vcxproj">
       <Project>{bdc7d21d-9fd9-41aa-bec8-8b70e1448c50}</Project>
     </ProjectReference>
   </ItemGroup>

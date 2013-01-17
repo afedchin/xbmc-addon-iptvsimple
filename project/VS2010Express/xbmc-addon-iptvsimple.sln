@@ -5,7 +5,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "platform", "platform\platfo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "tinyxml\tinyxml.vcxproj", "{BDC7D21D-9FD9-41AA-BEC8-8B70E1448C50}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pvr.iptvsimple", "xbmc-addon-iptvsimple.vcxproj", "{6C839B8E-2C7D-4725-8765-D6C0C10DBC06}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pvr.iptvsimple", "iptvsimple\xbmc-addon-iptvsimple.vcxproj", "{6C839B8E-2C7D-4725-8765-D6C0C10DBC06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
