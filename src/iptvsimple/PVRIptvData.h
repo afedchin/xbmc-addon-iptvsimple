@@ -23,8 +23,9 @@
 #include <vector>
 #include "platform/util/StdString.h"
 #include "client.h"
+#include "platform/threads/threads.h"
 
-struct PVRDemoEpgEntry
+struct PVRIptvEpgEntry
 {
   int         iBroadcastId;
   std::string strTitle;
@@ -46,7 +47,14 @@ struct PVRDemoEpgEntry
 //  std::string strEpisodeName;
 };
 
-struct PVRDemoChannel
+struct PVRIptvEpgChannel
+{
+  int         iId;
+  std::string strName;
+  std::vector<PVRIptvEpgEntry> epg;
+};
+
+struct PVRIptvChannel
 {
   bool                    bRadio;
   int                     iUniqueId;
@@ -55,11 +63,14 @@ struct PVRDemoChannel
   std::string             strChannelName;
   std::string             strIconPath;
   std::string             strStreamURL;
+
+  std::vector<PVRIptvEpgEntry> epg;
+
+  int                     iTvgId;
   std::string             strTvgName;
-  std::vector<PVRDemoEpgEntry> epg;
 };
 
-struct PVRDemoRecording
+struct PVRIptvRecording
 {
   int         iDuration;
   int         iGenreType;
@@ -73,7 +84,7 @@ struct PVRDemoRecording
   time_t      recordingTime;
 };
 
-struct PVRDemoChannelGroup
+struct PVRIptvChannelGroup
 {
   bool             bRadio;
   int              iGroupId;
@@ -81,15 +92,15 @@ struct PVRDemoChannelGroup
   std::vector<int> members;
 };
 
-class PVRDemoData
+class PVRIptvData : public PLATFORM::CThread
 {
 public:
-  PVRDemoData(void);
-  virtual ~PVRDemoData(void);
+  PVRIptvData(void);
+  virtual ~PVRIptvData(void);
 
   virtual int GetChannelsAmount(void);
   virtual PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio);
-  virtual bool GetChannel(const PVR_CHANNEL &channel, PVRDemoChannel &myChannel);
+  virtual bool GetChannel(const PVR_CHANNEL &channel, PVRIptvChannel &myChannel);
 
   virtual int GetChannelGroupsAmount(void);
   virtual PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio);
@@ -105,20 +116,28 @@ public:
   virtual CStdString GetLogoFile(CStdString &pstrLogo) const;
 
 protected:
-  virtual bool LoadDemoData(void);
   virtual bool LoadPlayList(void);
   virtual bool LoadEPG(void);
-  virtual CStdString GetHttp(CStdString& url);
-//  virtual bool GetString(XMLNode xRootNode, const char* strTag, CStdString& strStringValue);
-  virtual bool FindChannelByTVG(const char* strTag, PVRDemoChannel &found);
+  virtual CStdString GetFileContents(CStdString& url);
+  virtual PVRIptvEpgChannel * FindEgpChannelById(int iId);
+  virtual PVRIptvEpgChannel * FindEgpChannelByPvrChannel(PVRIptvChannel &pvrChannel);
   virtual int ParseDateTime(CStdString strDate, bool iDateFormat = true);
 
+  virtual bool gzipInflate( const std::string& compressedBytes, std::string& uncompressedBytes);
+
+  virtual CStdString GetCachedFileContents(const char * strCachedName, const char * strFilePath);
+
+protected:
+  virtual void *Process(void);
+
 private:
-  std::vector<PVRDemoChannelGroup> m_groups;
-  std::vector<PVRDemoChannel>      m_channels;
-  std::vector<PVRDemoRecording>    m_recordings;
-  time_t                           m_iEpgStart;
-  CStdString                       m_strDefaultIcon;
-  CStdString                       m_strDefaultXMLTVUrl;
-  CStdString                       m_strDefaultMovie;
+  std::vector<PVRIptvEpgChannel>	m_egpChannels;
+  std::vector<PVRIptvChannelGroup>	m_groups;
+  std::vector<PVRIptvChannel>		m_channels;
+  std::vector<PVRIptvRecording>		m_recordings;
+  bool								m_bEGPLoaded;
+  time_t							m_iEpgStart;
+  CStdString						m_strDefaultIcon;
+  CStdString						m_strXMLTVUrl;
+  CStdString						m_strM3uUrl;
 };

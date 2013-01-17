@@ -22,10 +22,17 @@
 
 #include "libXBMC_addon.h"
 #include "libXBMC_pvr.h"
-//#include "utils/CharsetConverter.h"
 
 extern bool                          m_bCreated;
 extern std::string                   g_strUserPath;
 extern std::string                   g_strClientPath;
 extern ADDON::CHelper_libXBMC_addon *XBMC;
 extern CHelper_libXBMC_pvr          *PVR;
+
+extern std::string g_strTvgPath;
+extern std::string g_strM3UPath;
+
+
+std::string PathCombine(const char* strPath, const char * strFileName);
+extern std::string GetClientFilePath(const char * strFileName);
+extern std::string GetUserFilePath(const char * strFileName);

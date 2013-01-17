@@ -22,4 +22,5 @@
 *.ilk
 [Dd]ebug*/
 [Rr]elease*/
+[._rResharper]*/
 ipch*/

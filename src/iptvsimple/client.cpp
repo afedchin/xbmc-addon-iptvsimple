@@ -21,7 +21,7 @@
 
 #include "client.h"
 #include "xbmc_pvr_dll.h"
-#include "PVRDemoData.h"
+#include "PVRIptvData.h"
 #include "platform/util/util.h"
 
 using namespace std;
@@ -31,11 +31,14 @@ using namespace ADDON;
 #define snprintf _snprintf
 #endif
 
+#define DEFAULT_TVG_PATH       "http://www.teleguide.info/download/new3/xmltv.xml.gz"
+#define M3U_FILE_NAME          "iptv.m3u"
+
 bool           m_bCreated       = false;
 ADDON_STATUS   m_CurStatus      = ADDON_STATUS_UNKNOWN;
-PVRDemoData   *m_data           = NULL;
+PVRIptvData   *m_data           = NULL;
 bool           m_bIsPlaying     = false;
-PVRDemoChannel m_currentChannel;
+PVRIptvChannel m_currentChannel;
 
 /* User adjustable settings are saved here.
  * Default values are defined inside client.h
@@ -47,11 +50,54 @@ std::string g_strClientPath           = "";
 CHelper_libXBMC_addon *XBMC           = NULL;
 CHelper_libXBMC_pvr   *PVR            = NULL;
 
+std::string g_strTvgPath              = DEFAULT_TVG_PATH;
+std::string g_strM3UPath              = "";
+
+std::string PathCombine(const char* strPath, const char * strFileName)
+{
+	std::string strResult = strPath;
+    if (strResult.at(strResult.size() - 1) == '\\' ||
+        strResult.at(strResult.size() - 1) == '/') {
+      strResult.append(strFileName);
+	}
+	else {
+      strResult.append("/");
+      strResult.append(strFileName);
+	}
+
+	return strResult;
+}
+
+extern std::string GetClientFilePath(const char * strFileName)
+{
+	return PathCombine(g_strClientPath.c_str(), strFileName);
+}
+
+extern std::string GetUserFilePath(const char * strFileName)
+{
+	return PathCombine(g_strUserPath.c_str(), strFileName);
+}
+
 extern "C" {
 
 void ADDON_ReadSettings(void)
 {
-  //STUB
+  char buffer[1024];
+  if (XBMC->GetSetting("tvgPath", &buffer)) {
+	g_strTvgPath = buffer;
+  }
+
+  if (g_strTvgPath == "") {
+	  g_strTvgPath = DEFAULT_TVG_PATH;
+  }
+
+  if (XBMC->GetSetting("m3uPath", &buffer)) {
+	g_strM3UPath = buffer;
+  } 
+
+  if (g_strM3UPath == "") {
+	  g_strM3UPath = GetClientFilePath(M3U_FILE_NAME);
+  }
 }
 
 ADDON_STATUS ADDON_Create(void* hdl, void* props)
@@ -76,7 +122,7 @@ ADDON_STATUS ADDON_Create(void* hdl, void* props)
     return ADDON_STATUS_PERMANENT_FAILURE;
   }
 
-  XBMC->Log(LOG_DEBUG, "%s - Creating the PVR demo add-on", __FUNCTION__);
+  XBMC->Log(LOG_DEBUG, "%s - Creating the PVR IPTV Simple add-on", __FUNCTION__);
 
   m_CurStatus     = ADDON_STATUS_UNKNOWN;
   g_strUserPath   = pvrprops->strUserPath;
@@ -84,7 +130,7 @@ ADDON_STATUS ADDON_Create(void* hdl, void* props)
 
   ADDON_ReadSettings();
 
-  m_data = new PVRDemoData;
+  m_data = new PVRIptvData;
   m_CurStatus = ADDON_STATUS_OK;
   m_bCreated = true;
 
