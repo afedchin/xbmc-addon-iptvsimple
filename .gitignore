@@ -12,3 +12,14 @@
 *.la
 *.a
 
+*.suo
+*.user
+*.sdf
+*.opensdf
+*.filters
+*.pdb
+*.exp
+*.ilk
+[Dd]ebug*/
+[Rr]elease*/
+ipch*/
