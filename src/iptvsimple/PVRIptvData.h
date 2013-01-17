@@ -111,10 +111,6 @@ public:
   virtual int GetRecordingsAmount(void);
   virtual PVR_ERROR GetRecordings(ADDON_HANDLE handle);
 
-  virtual std::string GetSettingsFile() const;
-  virtual std::string GetPlylistFile() const;
-  virtual CStdString GetLogoFile(CStdString &pstrLogo) const;
-
 protected:
   virtual bool LoadPlayList(void);
   virtual bool LoadEPG(void);

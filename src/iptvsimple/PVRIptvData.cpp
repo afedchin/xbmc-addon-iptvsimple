@@ -77,46 +77,8 @@ PVRIptvData::~PVRIptvData(void)
 {
   m_channels.clear();
   m_groups.clear();
+  m_egpChannels.clear();
 }
-
-std::string PVRIptvData::GetSettingsFile() const
-{
-  string settingFile = g_strClientPath;
-  if (settingFile.at(settingFile.size() - 1) == '\\' ||
-      settingFile.at(settingFile.size() - 1) == '/')
-    settingFile.append("PVRIptvAddonSettings.xml");
-  else
-    settingFile.append("/PVRIptvAddonSettings.xml");
-  return settingFile;
-}
-
-std::string PVRIptvData::GetPlylistFile() const
-{
-  string settingFile = g_strClientPath;
-  if (settingFile.at(settingFile.size() - 1) == '\\' ||
-      settingFile.at(settingFile.size() - 1) == '/')
-    settingFile.append("iptv.m3u");
-  else
-    settingFile.append("/iptv.m3u");
-  return settingFile;
-}
-
-CStdString PVRIptvData::GetLogoFile(CStdString &pstrLogo) const
-{
-  CStdString logoFile = g_strClientPath;
-
-  if (logoFile.at(logoFile.size() - 1) == '\\' ||
-      logoFile.at(logoFile.size() - 1) == '/')
-    logoFile.append("icons/");
-  else
-    logoFile.append("/icons/");
-
-  logoFile.append(pstrLogo);
-  logoFile.append(".bmp");
-
-  return logoFile;
-}
-
 
 bool PVRIptvData::LoadEPG(void) 
 {
@@ -358,13 +320,13 @@ bool PVRIptvData::LoadPlayList(void)
 						strTvgLogo = XBMC->UnknownToUTF8(strTvgLogo);
 
 						if (!strTvgLogo.IsEmpty())
-							tmpChannel.strIconPath = GetLogoFile(strTvgLogo);
+							tmpChannel.strIconPath = GetClientFilePath("icons/" + strTvgLogo);
 					}
 				}
 				else
 				{
 					strTvgLogo = XBMC->UnknownToUTF8(strChnlName);
-					tmpChannel.strIconPath = GetLogoFile(strTvgLogo);
+					tmpChannel.strIconPath = GetClientFilePath("icons/" + strTvgLogo);
 				}
 
 				if (iGroupNamePos >= 0) 

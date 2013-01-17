@@ -79,8 +79,6 @@ Makefile
 addons/Makefile
 addons/pvr.iptvsimple/Makefile
 addons/pvr.iptvsimple/addon.xml
-data/addons.xml
-data/Makefile
 src/Makefile
 src/tinyxml/Makefile
 src/iptvsimple/Makefile
