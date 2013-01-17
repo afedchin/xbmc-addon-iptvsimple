@@ -22,5 +22,6 @@
 *.ilk
 [Dd]ebug*/
 [Rr]elease*/
-[._rResharper]*/
+[._][rR]e[sS]harper*/
 ipch*/
+/project/VS2010Express/pvr.iptvsimple.*.zip

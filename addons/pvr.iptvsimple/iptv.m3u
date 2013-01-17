@@ -1,0 +1,395 @@
+#EXTM3U 
+#EXTINF:-1 tvg-name="Первый_канал" tvg-logo="@ПервыйКанал" group-title="Федеральные каналы",Первый канал
+udp://@224.2.0.1:6000
+#EXTINF:-1 tvg-name="Россия_1" tvg-logo="@Россия1",Россия-1
+udp://@224.2.0.6:6000
+#EXTINF:-1 tvg-name="Россия_Культура" tvg-logo="@РоссияК",Россия К
+udp://@224.1.1.120:6000
+#EXTINF:-1 tvg-name="НТВ" tvg-logo="@НТВ",НТВ
+udp://@224.2.0.5:6000
+#EXTINF:-1 tvg-name="Пятый_Канал" tvg-logo="@ПятыйКанал",Пятый канал
+udp://@224.1.1.53:6000
+#EXTINF:-1 tvg-name="Россия_2_(Спорт)" tvg-logo="@Россия2",Россия-2
+udp://@224.2.0.10:6000
+#EXTINF:-1 tvg-name="MCM_Top" tvg-logo="@MCMTop" group-title="Музыка и развлечения",MCM Top
+udp://@224.1.1.30:6000
+#EXTINF:-1 tvg-name="Bridge_TV" tvg-logo="@BridgeTV",BRIDGE TV
+udp://@224.1.1.21:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@EuropaPlusTV",Europa Plus TV
+udp://@224.1.2.213:6000
+#EXTINF:-1 tvg-name="VH1-Russia" tvg-logo="@VH1",VH1
+udp://@224.1.2.174:6000
+#EXTINF:-1 tvg-name="A-ONE" tvg-logo="@AOne",A-ONE
+udp://@224.1.1.50:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@MTVRocks",MTV Rocks
+udp://@224.1.2.249:6000
+#EXTINF:-1 tvg-name="MTV_Dance" tvg-logo="@MTVDance",MTV Dance
+udp://@224.1.2.220:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@MTVHits",MTV Hits
+udp://@224.1.2.221:6000
+#EXTINF:-1 tvg-name="VH1_Classic" tvg-logo="@VH1Classic",VH1 Classic
+udp://@224.1.2.226:6000
+#EXTINF:-1 tvg-name="RU_TV" tvg-logo="@RUTV",RU.TV
+udp://@224.1.1.34:6000
+#EXTINF:-1 tvg-name="Music_Box_RU" tvg-logo="@RussianMusicBox",RUSSIAN MUSICBOX
+udp://@224.1.1.62:6000
+#EXTINF:-1 tvg-name="MUSIC_Box_TV" tvg-logo="@MusicBox",MUSICBOX
+udp://@224.1.2.138:6000
+#EXTINF:-1 tvg-name="Rusong_TV" tvg-logo="@RUSONGTV",RUSONG TV
+udp://@224.1.2.225:6000
+#EXTINF:-1 tvg-name="Ля-Минор" tvg-logo="@ЛяМинор",Ля-минор
+udp://@224.1.2.139:6000
+#EXTINF:-1 tvg-name="Шансон_ТВ" tvg-logo="@ШансонТВ",Шансон ТВ
+udp://@224.1.1.35:6000
+#EXTINF:-1 tvg-name="Mezzo" tvg-logo="@Mezzo",Mezzo
+udp://@224.1.2.217:6000
+#EXTINF:-1 tvg-name="Mezzo_Live_HD" tvg-logo="@MezzoLiveHD",Mezzo Live HD
+udp://@224.1.2.185:6000
+#EXTINF:-1 tvg-name="Муз_ТВ" tvg-logo="@Ю",Ю
+udp://@224.1.1.162:6000
+#EXTINF:-1 tvg-name="MTV-Russia" tvg-logo="@MTVРоссия",MTV Россия
+udp://@224.1.1.94:6000
+#EXTINF:-1 tvg-name="MTV_Live_HD" tvg-logo="@MTVLiveHD",MTV Live HD
+udp://@224.1.2.194:6000
+#EXTINF:-1 tvg-name="О2ТВ" tvg-logo="@О2ТВ",О2ТВ
+udp://@224.1.1.33:6000
+#EXTINF:-1 tvg-name="Юмор_ТВ" tvg-logo="@HumorBox",Юмор BOX
+udp://@224.1.1.64:6000
+#EXTINF:-1 tvg-name="HD_Life" tvg-logo="@HDLife",HD-Life
+udp://@224.1.2.186:6000
+#EXTINF:-1 tvg-name="Zee_TV" tvg-logo="@ZeeTV",Zee TV
+udp://@224.1.2.160:6000
+#EXTINF:-1 tvg-name="TV_XXI_(TV21)" tvg-logo="@TVXXI" group-title="Кино",TV XXI
+udp://@224.1.1.54:6000
+#EXTINF:-1 tvg-name="TV1000" tvg-logo="@TV1000",TV1000
+udp://@224.1.1.40:6000
+#EXTINF:-1 tvg-name="TV_1000_Action" tvg-logo="@TV1000Action",TV1000 Action
+udp://@224.1.1.87:6000
+#EXTINF:-1 tvg-name="TV_1000_Premium" tvg-logo="@TV1000Pemium",TV1000 Premium HD
+udp://@224.1.1.236:6000
+#EXTINF:-1 tvg-name="TV_1000_MegaHit" tvg-logo="@TV1000MegaHit",TV1000 Megahit HD
+udp://@224.1.1.237:6000
+#EXTINF:-1 tvg-name="TV_1000_Comedy" tvg-logo="@TV1000Comedy",TV1000 Comedy HD
+udp://@224.1.1.238:6000
+#EXTINF:-1 tvg-name="Syfy_Universal" tvg-logo="@SyfyUniversal",Syfy Universal
+udp://@224.1.2.159:6000
+#EXTINF:-1 tvg-name="AXN_Sci-fi" tvg-logo="@AXNSciFi",AXN Sci-Fi
+udp://@224.1.2.204:6000
+#EXTINF:-1 tvg-name="Fox_Crime" tvg-logo="@Fox",Fox
+udp://@224.1.2.156:6000
+#EXTINF:-1 tvg-name="Fox_Life" tvg-logo="@FoxLife",Fox Life
+udp://@224.1.2.157:6000
+#EXTINF:-1 tvg-name="Кино_ПЛЮС" tvg-logo="@КиноПлюс",Кино Плюс
+udp://@224.1.2.242:6000
+#EXTINF:-1 tvg-name="КИНОЛЮКС" tvg-logo="@КиноЛюкс",КиноЛюкс
+udp://@224.1.2.234:6000
+#EXTINF:-1 tvg-name="Кинопоказ" tvg-logo="@Кинопоказ",Кинопоказ
+udp://@224.1.2.235:6000
+#EXTINF:-1 tvg-name="Еврокино" tvg-logo="@Еврокино",Еврокино
+udp://@224.1.2.232:6000
+#EXTINF:-1 tvg-name="MGM" tvg-logo="@MGM",MGM
+udp://@224.1.2.218:6000
+#EXTINF:-1 tvg-name="Universal_Channel" tvg-logo="@UniversalChannel",Universal Channel
+udp://@224.1.2.154:6000
+#EXTINF:-1 tvg-name="Иллюзион__" tvg-logo="@ИллюзионПлюс",Иллюзион +
+udp://@224.1.1.31:6000
+#EXTINF:-1 tvg-name="ТВ-1000_Русское_кино" tvg-logo="@TV1000РусскоеКино",TV1000 Русское кино
+udp://@224.1.1.89:6000
+#EXTINF:-1 tvg-name="Русский_Иллюзион" tvg-logo="@РусскийИллюзион",Русский Иллюзион
+udp://@224.1.1.32:6000
+#EXTINF:-1 tvg-name="Наше_Новое_Кино" tvg-logo="@НашеНовоеКино",Наше новое кино
+udp://@224.1.2.244:6000
+#EXTINF:-1 tvg-name="Наше_кино" tvg-logo="@НашеКино",Наше Кино
+udp://@224.1.2.243:6000
+#EXTINF:-1 tvg-name="Киносоюз" tvg-logo="@Киносоюз",КИНОСОЮЗ
+udp://@224.1.2.252:6000
+#EXTINF:-1 tvg-name="Комедия_ТВ" tvg-logo="@КомедияТВ",Комедия ТВ
+udp://@224.1.1.82:6000
+#EXTINF:-1 tvg-name="Кинопоказ_HD-1" tvg-logo="@КинопоказHD1",Кинопоказ HD-1
+udp://@224.1.2.192:6000
+#EXTINF:-1 tvg-name="Кинопоказ_HD-2" tvg-logo="@КинопоказHD2",Кинопоказ HD-2
+udp://@224.1.2.193:6000
+#EXTINF:-1 tvg-name="Ретро_ТВ" tvg-logo="@Ретро",РЕТРО
+udp://@224.1.2.161:6000
+#EXTINF:-1 tvg-name="Настоящее_Страшное_ТВ" tvg-logo="@НСТВ",НСТВ
+udp://@224.1.1.80:6000
+#EXTINF:-1 tvg-name="Set" tvg-logo="@SET",Sony Entertainment Television
+udp://@224.1.2.155:6000
+#EXTINF:-1 tvg-name="СТС" tvg-logo="@СТС",СТС
+udp://@224.2.0.7:6000
+#EXTINF:-1 tvg-name="Домашний" tvg-logo="@Домашний",Домашний
+udp://@224.1.1.123:6000
+#EXTINF:-1 tvg-name="ТНТ" tvg-logo="@ТНТ",ТНТ
+udp://@224.1.1.126:6000
+#EXTINF:-1 tvg-name="РЕН_ТВ" tvg-logo="@РЕНТВ",РЕН ТВ
+udp://@224.2.0.8:6000
+#EXTINF:-1 tvg-name="ТВ-3" tvg-logo="@ТВ3",ТВ3
+udp://@224.1.1.122:6000
+#EXTINF:-1 tvg-name="Перец" tvg-logo="@Перец",Перец
+udp://@224.1.1.161:6000
+#EXTINF:-1 tvg-name="Канал_2x2" tvg-logo="@2x2",2х2
+udp://@224.1.1.233:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@ParamountComedy",Paramount Comedy
+udp://@224.1.2.250:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@BBCEntertainment",BBC Entertainment
+udp://@224.1.2.202:6000
+#EXTINF:-1 tvg-name="Discovery" tvg-logo="@DiscoveryChannel" group-title="Познавательные",Discovery Channel
+udp://@224.1.1.2:6000
+#EXTINF:-1 tvg-name="Viasat_History" tvg-logo="@ViasatHistory",Viasat History
+udp://@224.1.1.42:6000
+#EXTINF:-1 tvg-name="Viasat_Explorer" tvg-logo="@ViasatExplorer",Viasat Explorer
+udp://@224.1.1.41:6000
+#EXTINF:-1 tvg-name="24_Техно" tvg-logo="@24Техно",24ТЕХНО
+udp://@224.1.2.148:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@DiscoveryHDShowcase",Discovery HD Showcase
+udp://@224.1.1.214:6000
+#EXTINF:-1 tvg-name="Discovery_Science" tvg-logo="@DiscoveryScience",Discovery Science
+udp://@224.1.2.177:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@GalaxyTV",Galaxy TV
+udp://@224.1.2.248:6000
+#EXTINF:-1 tvg-name="National_Geographic" tvg-logo="@NatGeo",National Geographic Channel
+udp://@224.1.2.141:6000
+#EXTINF:-1 tvg-name="National_Geographic_HD" tvg-logo="@NatGeoHD",National Geographic Channel HD
+udp://@224.1.2.188:6000
+#EXTINF:-1 tvg-name="Nat_Geo_WILD" tvg-logo="@NatGeoWild",Nat Geo Wild
+udp://@224.1.2.222:6000
+#EXTINF:-1 tvg-name="Nat_Geo_Wild_HD" tvg-logo="@NatGeoWildHD",Nat Geo Wild HD
+udp://@224.1.2.182:6000
+#EXTINF:-1 tvg-name="Animal_Planet" tvg-logo="@AnimalPlanet",Animal Planet
+udp://@224.1.1.180:6000
+#EXTINF:-1 tvg-name="Animal_Planet_HD" tvg-logo="@AnimalPlanetHD" audio-track=1,Animal Planet HD
+udp://@224.1.1.215:6000
+#EXTINF:-1 tvg-name="Зоопарк" tvg-logo="@Zooпарк",Zooпарк
+udp://@224.1.2.145:6000
+#EXTINF:-1 tvg-name="Домашние_животные" tvg-logo="@ДомашниеЖивотные",Домашние животные
+udp://@224.1.2.144:6000
+#EXTINF:-1 tvg-name="Viasat_Nature_CEE" tvg-logo="@ViasatNature",Viasat Nature
+udp://@224.1.2.227:6000
+#EXTINF:-1 tvg-name="Amazing_Life_(Удивительная_жизнь)" tvg-logo="@AmazingLife",Amazing Life
+udp://@224.1.2.158:6000
+#EXTINF:-1 tvg-name="Ocean-TV" tvg-logo="@OceanTV",OCEAN-TV
+udp://@224.1.2.142:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@myZenHD",myZen HD
+udp://@224.1.2.191:6000
+#EXTINF:-1 tvg-name="Вопросы_и_ответы" tvg-logo="@ВопросыИОтветы",Вопросы и Ответы
+udp://@224.1.2.152:6000
+#EXTINF:-1 tvg-name="Психология21" tvg-logo="@Психология21",ПСИХОЛОГИЯ21
+udp://@224.1.2.131:6000
+#EXTINF:-1 tvg-name="Travel" tvg-logo="@TravelChannel",Travel Channel
+udp://@224.1.1.20:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@TravelChannelHD",Travel Channel HD
+udp://@224.1.2.181:6000
+#EXTINF:-1 tvg-name="Телепутешествия" tvg-logo="@Телепутешествия",Телепутешествия
+udp://@224.1.2.247:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@OutdoorChannel",Outdoor Channel
+udp://@224.1.2.224:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@OutdoorChannelHD",Outdoor Channel HD
+udp://@224.1.2.195:6000
+#EXTINF:-1 tvg-name="Моя_Планета" tvg-logo="@МояПланета",Моя планета
+udp://@224.1.2.146:6000
+#EXTINF:-1 tvg-name="English_Club_TV" tvg-logo="@EnglishClubTV",English Club TV
+udp://@224.1.1.150:6000
+#EXTINF:-1 tvg-name="Da_Vinci" tvg-logo="@DaVinciLearning",Da Vinci Learning
+udp://@224.1.2.209:6000
+#EXTINF:-1 tvg-name="Наука_2_0" tvg-logo="@Наука20",Наука 2.0
+udp://@224.1.2.239:6000
+#EXTINF:-1 tvg-name="365_Дней" tvg-logo="@365ДнейТВ",365 дней ТВ
+udp://@224.1.2.203:6000
+#EXTINF:-1 tvg-name="Кто_есть_кто" tvg-logo="@КтоЕстьКто",Кто есть Кто
+udp://@224.1.2.251:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@СинергияТВ",Синергия ТВ
+udp://@224.1.1.234:6000
+#EXTINF:-1 tvg-name="СГУ ТВ" tvg-logo="@1йОбразовательный",Первый образовательный
+udp://@224.1.1.5:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@Знание",Знание
+udp://@224.1.1.6:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@Просвещение",Просвещение
+udp://@224.1.1.212:6000
+#EXTINF:-1 tvg-name="РазТВ" tvg-logo="@РазТВ",Раз ТВ
+udp://@224.1.1.211:6000
+#EXTINF:-1 tvg-name="Усадьба" tvg-logo="@Усадьба",Усадьба
+udp://@224.1.2.150:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@АгроТВ",Агро-ТВ
+udp://@224.1.1.170:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@ИнваМедиаТВ",Инва Медиа ТВ
+udp://@224.1.1.218:6000
+#EXTINF:-1 tvg-name="Звезда" tvg-logo="@Звезда" group-title="Мужчинам",Звезда
+udp://@224.1.1.51:6000
+#EXTINF:-1 tvg-name="Оружие" tvg-logo="@Оружие",Оружие
+udp://@224.1.2.245:6000
+#EXTINF:-1 tvg-name="Боец" tvg-logo="@Боец",Боец
+udp://@224.1.1.83:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@БойцовскийКлуб",Бойцовский клуб
+udp://@224.1.2.230:6000
+#EXTINF:-1 tvg-name="Драйв_ТВ" tvg-logo="@Драйв",Драйв
+udp://@224.1.2.147:6000
+#EXTINF:-1 tvg-name="Авто_Плюс" tvg-logo="@АвтоПлюс",Авто Плюс
+udp://@224.1.1.84:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@MotorsTV" audio-track=1,Motors TV
+udp://@224.1.2.219:6000
+#EXTINF:-1 tvg-name="AB_Moteurs" tvg-logo="@ABMoteurs",AB Moteurs
+udp://@224.1.2.254:6000
+#EXTINF:-1 tvg-name="Охота_и_рыбалка" tvg-logo="@ОхотаИРыбалка",Охота и рыбалка
+udp://@224.1.2.143:6000
+#EXTINF:-1 tvg-name="Русский_Экстрим" tvg-logo="@РусскийЭкстрим",Русский Экстрим
+udp://@224.1.2.175:6000
+#EXTINF:-1 tvg-name="Extreme_Sports" tvg-logo="@ExtremeSportsCh",Extreme Sports Channel
+udp://@224.1.2.214:6000
+#EXTINF:-1 tvg-name="Спорт_1" tvg-logo="@Спорт1",Спорт 1
+udp://@224.1.2.164:6000
+#EXTINF:-1 tvg-name="Спорт_1" tvg-logo="@Спорт1HD",Спорт 1 HD
+udp://@224.1.1.183:6000
+#EXTINF:-1 tvg-name="Спорт_2" tvg-logo="@Спорт",Спорт
+udp://@224.1.2.246:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@Баскетбол",Баскетбол
+udp://@224.1.2.241:6000
+#EXTINF:-1 tvg-name="Футбол" tvg-logo="@Футбол",Футбол
+udp://@224.1.2.173:6000
+#EXTINF:-1 tvg-name="НТВ-ПЛЮС_Наш_Футбол" tvg-logo="@НашФутбол",Наш футбол
+udp://@224.1.1.95:6000
+#EXTINF:-1 tvg-name="Спорт_ПЛЮС" tvg-logo="@СпортПлюс",СПОРТ ПЛЮС
+udp://@224.1.2.253:6000
+#EXTINF:-1 tvg-name="Viasat_Sport" tvg-logo="@ViasatSport",Viasat Sport
+udp://@224.1.1.90:6000
+#EXTINF:-1 tvg-name="Eurosport" tvg-logo="@Eurosport",Eurosport
+udp://@224.1.2.165:6000
+#EXTINF:-1 tvg-name="Eurosport_2" tvg-logo="@Eurosport2",Eurosport 2
+udp://@224.1.2.166:6000
+#EXTINF:-1 tvg-name="Eurosport_HD" tvg-logo="@EurosportHD",Eurosport HD
+udp://@224.1.2.184:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@EurosportNews" audio-track=3,Eurosport News
+udp://@224.1.2.205:6000
+#EXTINF:-1 tvg-name="КХЛ-ТВ" tvg-logo="@КХЛТВ",КХЛ ТВ
+udp://@224.1.2.167:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@ESPN",ESPN
+udp://@224.1.2.212:6000
+#EXTINF:-1 tvg-name="Русская_ночь" tvg-logo="@РусскаяНочь" group-title="Эротика",Русская ночь
+udp://@224.1.1.85:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@Playboy",Playboy
+udp://@224.1.1.98:6000
+#EXTINF:-1 tvg-name="Hustler_Blue_(Ночной_канал)" tvg-logo="@BlueHustler",Blue Hustler
+udp://@224.1.1.97:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@XXL",XXL
+udp://@224.1.1.99:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@НочнойКлуб",Ночной клуб
+udp://@224.1.1.100:6000
+#EXTINF:-1 tvg-name="ТДК" tvg-logo="@ТДК" group-title="Женщинам",Телевизионный Дамский Клуб
+udp://@224.1.1.24:6000
+#EXTINF:-1 tvg-name="Style_TV" tvg-logo="@StyleTV",Style TV
+udp://@224.1.2.140:6000
+#EXTINF:-1 tvg-name="Fashion_TV" tvg-logo="@FashionTV",FashionTV
+udp://@224.1.1.36:6000
+#EXTINF:-1 tvg-name="World_Fashion_Channel_(рус_)" tvg-logo="@WorldFashionChannel",World Fashion Channel
+udp://@224.1.2.176:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@FashionOneHD",Fashion One HD
+udp://@224.1.2.189:6000
+#EXTINF:-1 tvg-name="Мать_и_Дитя" tvg-logo="@МатьИДитя",Мать и дитя
+udp://@224.1.2.136:6000
+#EXTINF:-1 tvg-name="Живи" tvg-logo="@Живи",ЖИВИ!
+udp://@224.1.2.163:6000
+#EXTINF:-1 tvg-name="Здоровое_Телевидение" tvg-logo="@ЗдоровоеТВ",Здоровое ТВ
+udp://@224.1.2.151:6000
+#EXTINF:-1 tvg-name="Кухня_ТВ" tvg-logo="@КухняТВ",Кухня ТВ
+udp://@224.1.2.149:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@AMEDIA",AMEDIA
+udp://@224.1.2.172:6000
+#EXTINF:-1 tvg-name="Феникс_Кино" tvg-logo="@ФениксПлюсКино",Феникс+Кино
+udp://@224.1.2.162:6000
+#EXTINF:-1 tvg-name="ZONE_Romantica" tvg-logo="@ZoneRomantica",Zone Romantica
+udp://@224.1.2.229:6000
+#EXTINF:-1 tvg-name="DIVA_Universal" tvg-logo="@DivaUniversal",Diva Universal
+udp://@224.1.2.153:6000
+#EXTINF:-1 tvg-name="TLC" tvg-logo="@TLC",TLC
+udp://@224.1.2.130:6000
+#EXTINF:-1 tvg-name="Карусель" tvg-logo="@Карусель" group-title="Детям",Карусель
+udp://@224.1.1.66:6000
+#EXTINF:-1 tvg-name="Детский_канал" tvg-logo="@Детский",Детский
+udp://@224.1.1.88:6000
+#EXTINF:-1 tvg-name="Мультимания" tvg-logo="@Мультимания",Мультимания
+udp://@224.1.2.238:6000
+#EXTINF:-1 tvg-name="Disney_Channel" tvg-logo="@Disney",Disney
+udp://@224.1.1.56:6000
+#EXTINF:-1 tvg-name="Cartoon_Network" tvg-logo="@CartoonNetwork",Cartoon Network
+udp://@224.1.2.134:6000
+#EXTINF:-1 tvg-name="Nickelodeon" tvg-logo="@Nickelodeon",Nickelodeon
+udp://@224.1.2.137:6000
+#EXTINF:-1 tvg-name="Nickelodeon_HD" tvg-logo="@NickelodeonHD",Nickelodeon HD
+udp://@224.1.2.187:6000
+#EXTINF:-1 tvg-name="KidsCo" tvg-logo="@KidsCo",KidsCo
+udp://@224.1.2.132:6000
+#EXTINF:-1 tvg-name="Baby_TV" tvg-logo="@BabyTV",Baby TV
+udp://@224.1.2.207:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@Boomerang",Boomerang
+udp://@224.1.2.206:6000
+#EXTINF:-1 tvg-name="Tiji_" tvg-logo="@TiJi",TiJi
+udp://@224.1.2.133:6000
+#EXTINF:-1 tvg-name="JimJam" tvg-logo="@JimJam",JimJam
+udp://@224.1.2.216:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@NickJr" audio-track=1,Nick Jr.
+udp://@224.1.1.213:6000
+#EXTINF:-1 tvg-name="Радость_Моя" tvg-logo="@РадостьМоя",Радость моя
+udp://@224.1.2.135:6000
+#EXTINF:-1 tvg-name="Gulli" tvg-logo="@Gulli",Gulli
+udp://@224.1.2.215:6000
+#EXTINF:-1 tvg-name="Детский_мир" tvg-logo="@ДетскийМир",Детский мир / Телеклуб
+udp://@224.1.2.231:6000
+#EXTINF:-1 tvg-name="Россия_24" tvg-logo="@Россия24" group-title="Новости и бизнес",Россия-24
+udp://@224.1.1.52:6000
+#EXTINF:-1 tvg-name="EuroNews" tvg-logo="@Euronews",Euronews
+udp://@224.1.2.129:6000
+#EXTINF:-1 tvg-name="Russia_Today" tvg-logo="@RussiaToday",RT
+udp://@224.1.1.48:6000
+#EXTINF:-1 tvg-name="France_24" tvg-logo="@France24",France 24
+udp://@224.1.2.170:6000
+#EXTINF:-1 tvg-name="France_24" tvg-logo="@France24",France 24 (ENG)
+udp://@224.1.2.208:6000
+#EXTINF:-1 tvg-name="Deutsche_Welle" tvg-logo="@DeutscheWelle",Deutsche Welle
+udp://@224.1.2.210:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@NHKWorld",NHK World
+udp://@224.1.2.223:6000
+#EXTINF:-1 tvg-name="РБК" tvg-logo="@РБК",РБК
+udp://@224.1.1.26:6000
+#EXTINF:-1 tvg-name="Эксперт_ТВ" tvg-logo="@ЭкспертТВ",Эксперт ТВ
+udp://@224.1.2.196:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@Успех",Успех
+udp://@224.1.1.219:6000
+#EXTINF:-1 tvg-name="Закон_ТВ" tvg-logo="@ЗаконТВ",Закон ТВ
+udp://@224.1.2.233:6000
+#EXTINF:-1 tvg-name="Комсомольская_правда" tvg-logo="@КПТВ",Комсомольская правда
+udp://@224.1.2.237:6000
+#EXTINF:-1 tvg-name="Дождь" tvg-logo="@Дождь",Дождь
+udp://@224.1.1.217:6000
+#EXTINF:-1 tvg-name="Ностальгия" tvg-logo="@Ностальгия",Ностальгия
+udp://@224.1.2.240:6000
+#EXTINF:-1 tvg-name="Discovery_World" tvg-logo="@DiscoveryWorld",Discovery World
+udp://@224.1.2.178:6000
+#EXTINF:-1 tvg-name="Investigation_Discovery" tvg-logo="@ID",Investigation Discovery
+udp://@224.1.2.211:6000
+#EXTINF:-1 tvg-name="Zone_Reality" tvg-logo="@ZoneReality",Zone Reality
+udp://@224.1.2.228:6000
+#EXTINF:-1 tvg-name="ТВЦ" tvg-logo="@ТВЦентр" group-title="Региональные и этнические",ТВ Центр
+udp://@224.1.1.7:6000
+#EXTINF:-1 tvg-name="Страна" tvg-logo="@СТРАНА",СТРАНА
+udp://@224.1.1.168:6000
+#EXTINF:-1 tvg-name="9_Орбита" tvg-logo="@ДевятыйКанал",Девятый канал
+udp://@224.1.1.11:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@ДонТР" mono=1,Дон-ТР
+udp://@224.2.0.9:6000
+#EXTINF:-1 tvg-name="ТРО" tvg-logo="@ТРО",ТРО
+udp://@224.1.2.168:6000
+#EXTINF:-1 tvg-name="МИР" tvg-logo="@Мир",Мир
+udp://@224.1.1.67:6000
+#EXTINF:-1 tvg-name="Союз" tvg-logo="@Союз",Союз
+udp://@224.1.1.77:6000
+#EXTINF:-1 tvg-name="Спас_ТВ" tvg-logo="@Спас",Спас
+udp://@224.1.1.78:6000
+#EXTINF:-1 tvg-name="ТВ_АРМ_РУ" tvg-logo="@ТВАРМРУ",ТВ АРМ РУ
+udp://@224.1.2.200:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@ТНВПланета",ТНВ-Планета
+udp://@224.1.2.169:6000
+#EXTINF:-1 tvg-name="Arirang_TV" tvg-logo="@ArirangTV",Arirang TV
+udp://@224.1.1.216:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@ВсеТВ" group-title="Ростелеком",Всё ТВ
+udp://@224.1.2.201:6000
+#EXTINF:-1 tvg-name="" tvg-logo="@РусскийРоман" group-title="Новые каналы",Русский роман
+udp://@224.1.1.235:6000

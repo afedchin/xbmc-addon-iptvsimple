@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <setting id="m3uPath" type="text" label="30000" default="" />
+    <setting id="tvgPath" type="text" label="30001" default="" />
+</settings>

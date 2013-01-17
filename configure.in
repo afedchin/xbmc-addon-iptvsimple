@@ -1,6 +1,6 @@
 m4_define([MAJOR], 0)
 m4_define([MINOR], 0)
-m4_define([MICRO], 1)
+m4_define([MICRO], 2)
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT([xbmc-addon-iptvsimple], [MAJOR.MINOR.MICRO], [anightik@gmail.com])
@@ -45,7 +45,7 @@ case $host in
   *-*-cygwin* | *-*-mingw32*)
     LDFLAGS+="-no-undefined -no-cygwin"
     ISMINGW32=true
-    ADDONNAME=XBMC_IPTV_Simple_WIN32.pvr
+    ADDONNAME=XBMC_IPTV_Simple_win32.dll
     SOEXT=dll
     ;;
   arm*-*-linux-gnu*)
