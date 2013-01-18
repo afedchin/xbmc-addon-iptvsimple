@@ -5,8 +5,7 @@ SUBDIRS = \
 	src
 
 DIST_SUBDIRS = \
-	$(SUBDIRS) \
-	data
+	$(SUBDIRS)
 
 dist-zip: all
 	cp -r addons/pvr.iptvsimple .
