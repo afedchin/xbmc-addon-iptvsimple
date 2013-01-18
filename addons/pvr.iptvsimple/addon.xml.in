@@ -10,7 +10,7 @@
   <extension
     point="xbmc.pvrclient"
     library_linux="XBMC_IPTV_Simple.pvr"
-	library_osx="XBMC_IPTV_Simple.pvr"
+    library_osx="XBMC_IPTV_Simple.pvr"
     library_wingl="XBMC_IPTV_Simple_win32.dll"
     library_windx="XBMC_IPTV_Simple_win32.dll"
     library_android="libXBMC_IPTV_Simple.so" />
@@ -18,6 +18,6 @@
     <summary lang="en">IPTV Simple PVR Client</summary>
     <description lang="en">IPTV Simple PVR Client</description>
     <disclaimer lang="en"></disclaimer>
-    <platform>wingl windx</platform>
+    <platform>linux windx wingl osx android</platform>
   </extension>
 </addon>

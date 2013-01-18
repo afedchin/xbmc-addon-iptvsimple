@@ -739,8 +739,8 @@ CStdString PVRIptvData::GetCachedFileContents(const char * strCachedName, const 
 	bool bNeedReload = false;
 
 	if (XBMC->FileExists(strCachedPath, false)) {
-		_stat64 statCached;
-		_stat64 statOrig;
+		struct __stat64 statCached;
+		struct __stat64 statOrig;
 
 		XBMC->StatFile(strCachedPath.c_str(), &statCached);
 		XBMC->StatFile(strFilePath.c_str(), &statOrig);
