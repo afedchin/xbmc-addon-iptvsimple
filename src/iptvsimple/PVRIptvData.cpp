@@ -252,11 +252,12 @@ bool PVRIptvData::LoadPlayList(void)
 			}
 		}
 
-		CStdString	strChnlName;
-		CStdString	strTvgId;
-		CStdString	strTvgName;
-		CStdString	strTvgLogo;
-		CStdString	strGroupName;
+		int			iTvgId = -1;
+		CStdString	strChnlName = "";
+		CStdString	strTvgId = "";
+		CStdString	strTvgName = "";
+		CStdString	strTvgLogo = "";
+		CStdString	strGroupName = "";
 
 		if (strLine.Left((int)strlen(M3U_INFO_MARKER)) == M3U_INFO_MARKER) 
 		{
@@ -289,13 +290,15 @@ bool PVRIptvData::LoadPlayList(void)
 				  
 					if (iTvgIdEndPos >= 0)
 					{
-						tmpChannel.iTvgId = atoi(strInfoLine.substr(iTvgIdPos, iTvgIdEndPos - iTvgIdPos).c_str());
+						iTvgId = atoi(strInfoLine.substr(iTvgIdPos, iTvgIdEndPos - iTvgIdPos).c_str());
 					}
 				}
 				else
 				{
-					tmpChannel.iTvgId = atoi(strInfoLine.c_str());
+					iTvgId = atoi(strInfoLine.c_str());
 				}
+
+				tmpChannel.iTvgId = iTvgId;
 
 				if (iTvgNamePos >= 0) 
 				{
@@ -305,9 +308,10 @@ bool PVRIptvData::LoadPlayList(void)
 					if (iTvgNameEndPos >= 0)
 					{
 						strTvgName = strInfoLine.substr(iTvgNamePos, iTvgNameEndPos - iTvgNamePos);
-						tmpChannel.strTvgName = XBMC->UnknownToUTF8(strTvgName);
 					}
 				}
+
+				tmpChannel.strTvgName = XBMC->UnknownToUTF8(strTvgName);
 
 				if (iTvgLogoPos >= 0) 
 				{
@@ -322,17 +326,18 @@ bool PVRIptvData::LoadPlayList(void)
 						if (!strTvgLogo.IsEmpty()) {
 							strTvgLogo = GetClientFilePath("icons/" + strTvgLogo);
 							strTvgLogo.append(".png");
-							tmpChannel.strIconPath = strTvgLogo;
 						}
 					}
 				}
-				else
+
+				if (strTvgLogo.IsEmpty())
 				{
 					strTvgLogo = XBMC->UnknownToUTF8(strChnlName);
 					strTvgLogo = GetClientFilePath("icons/" + strTvgLogo);
 					strTvgLogo.append(".png");
-					tmpChannel.strIconPath = strTvgLogo;
 				}
+
+				tmpChannel.strIconPath = strTvgLogo;
 
 				if (iGroupNamePos >= 0) 
 				{
@@ -385,7 +390,10 @@ bool PVRIptvData::LoadPlayList(void)
 				}
 			}
 
+			tmpChannel.iTvgId = -1;
 			tmpChannel.strChannelName = "";
+			tmpChannel.strTvgName = "";
+			tmpChannel.strIconPath = "";
 		}
 	}
   
