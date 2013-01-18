@@ -319,14 +319,19 @@ bool PVRIptvData::LoadPlayList(void)
 						strTvgLogo = strInfoLine.substr(iTvgLogoPos, iTvgLogoEndPos - iTvgLogoPos);
 						strTvgLogo = XBMC->UnknownToUTF8(strTvgLogo);
 
-						if (!strTvgLogo.IsEmpty())
-							tmpChannel.strIconPath = GetClientFilePath("icons/" + strTvgLogo);
+						if (!strTvgLogo.IsEmpty()) {
+							strTvgLogo = GetClientFilePath("icons/" + strTvgLogo);
+							strTvgLogo.append(".png");
+							tmpChannel.strIconPath = strTvgLogo;
+						}
 					}
 				}
 				else
 				{
 					strTvgLogo = XBMC->UnknownToUTF8(strChnlName);
-					tmpChannel.strIconPath = GetClientFilePath("icons/" + strTvgLogo);
+					strTvgLogo = GetClientFilePath("icons/" + strTvgLogo);
+					strTvgLogo.append(".png");
+					tmpChannel.strIconPath = strTvgLogo;
 				}
 
 				if (iGroupNamePos >= 0) 

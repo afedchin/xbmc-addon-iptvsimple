@@ -194,20 +194,20 @@ PVR_ERROR GetAddonCapabilities(PVR_ADDON_CAPABILITIES* pCapabilities)
   pCapabilities->bSupportsTV              = true;
   pCapabilities->bSupportsRadio           = false;
   pCapabilities->bSupportsChannelGroups   = true;
-  pCapabilities->bSupportsRecordings      = false;
+  pCapabilities->bSupportsRecordings      = true;
 
   return PVR_ERROR_NO_ERROR;
 }
 
 const char *GetBackendName(void)
 {
-  static const char *strBackendName = "pulse-eight demo pvr add-on";
+  static const char *strBackendName = "IPTV Simple PVR Add-on";
   return strBackendName;
 }
 
 const char *GetBackendVersion(void)
 {
-  static CStdString strBackendVersion = "0.1";
+  static CStdString strBackendVersion = "0.0.2";
   return strBackendVersion.c_str();
 }
 
@@ -312,7 +312,7 @@ PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP &g
 
 PVR_ERROR SignalStatus(PVR_SIGNAL_STATUS &signalStatus)
 {
-  snprintf(signalStatus.strAdapterName, sizeof(signalStatus.strAdapterName), "pvr demo adapter 1");
+  snprintf(signalStatus.strAdapterName, sizeof(signalStatus.strAdapterName), "IPTV Simple Adapter 1");
   snprintf(signalStatus.strAdapterStatus, sizeof(signalStatus.strAdapterStatus), "OK");
 
   return PVR_ERROR_NO_ERROR;
@@ -332,6 +332,16 @@ PVR_ERROR GetRecordings(ADDON_HANDLE handle)
     return m_data->GetRecordings(handle);
 
   return PVR_ERROR_NOT_IMPLEMENTED;
+}
+
+bool CanPauseStream(void) 
+{ 
+	return true; 
+}
+
+const char * GetLiveStreamURL(const PVR_CHANNEL &channel) 
+{ 
+	return channel.strStreamURL; 
 }
 
 /** UNUSED API FUNCTIONS */
@@ -354,7 +364,6 @@ int ReadLiveStream(unsigned char *pBuffer, unsigned int iBufferSize) { return 0;
 long long SeekLiveStream(long long iPosition, int iWhence /* = SEEK_SET */) { return -1; }
 long long PositionLiveStream(void) { return -1; }
 long long LengthLiveStream(void) { return -1; }
-const char * GetLiveStreamURL(const PVR_CHANNEL &channel) { return ""; }
 PVR_ERROR DeleteRecording(const PVR_RECORDING &recording) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR RenameRecording(const PVR_RECORDING &recording) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR SetRecordingPlayCount(const PVR_RECORDING &recording, int count) { return PVR_ERROR_NOT_IMPLEMENTED; }
@@ -369,7 +378,6 @@ void DemuxAbort(void) {}
 DemuxPacket* DemuxRead(void) { return NULL; }
 unsigned int GetChannelSwitchDelay(void) { return 0; }
 void PauseStream(bool bPaused) {}
-bool CanPauseStream(void) { return true; }
 bool CanSeekStream(void) { return false; }
 bool SeekTime(int,bool,double*) { return false; }
 void SetSpeed(int) {};
