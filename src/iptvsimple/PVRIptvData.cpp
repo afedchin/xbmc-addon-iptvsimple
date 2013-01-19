@@ -82,7 +82,6 @@ PVRIptvData::~PVRIptvData(void)
 
 bool PVRIptvData::LoadEPG(void) 
 {
-	//CStdString strXML = GetFileContents(m_strXMLTVUrl);
 	CStdString strXML = GetCachedFileContents(TVG_FILE_NAME, m_strXMLTVUrl);
 
 	if (strXML.IsEmpty()) 
@@ -136,8 +135,6 @@ bool PVRIptvData::LoadEPG(void)
 		}
 
 		PVRIptvEpgChannel egpChannel;
-		memset(&egpChannel, 0, sizeof(PVRIptvEpgChannel));
-
 		egpChannel.iId = iChannelId;
 		egpChannel.strName = strName;
 
@@ -146,6 +143,7 @@ bool PVRIptvData::LoadEPG(void)
 
 	if (m_egpChannels.size() == 0) 
 	{
+		XBMC->Log(LOG_ERROR, "EPG channels not founded.");
 		return false;
 	}
 
@@ -179,7 +177,6 @@ bool PVRIptvData::LoadEPG(void)
 		XMLUtils::GetString(pChannelNode, "desc", strDesc);
 
 		PVRIptvEpgEntry entry;
-		memset(&entry, 0, sizeof(PVRIptvEpgEntry));
 
 		entry.iBroadcastId = ++iBroadCastId;
 		entry.iGenreType = 0;
@@ -196,23 +193,18 @@ bool PVRIptvData::LoadEPG(void)
 
 	m_bEGPLoaded = true;
 
+	XBMC->Log(LOG_NOTICE, "Loaded EPG for %d channels.", m_egpChannels.size());
 	return true;
 }
 
 bool PVRIptvData::LoadPlayList(void) 
 {
-	//CStdString strPlaylistContent = GetFileContents(m_strM3uUrl);
 	CStdString strPlaylistContent = GetCachedFileContents(M3U_FILE_NAME, m_strM3uUrl);
-
 	if (strPlaylistContent.IsEmpty())
 	{
 		XBMC->Log(LOG_ERROR, "invalid palylist data (no/invalid data found at '%s')", m_strM3uUrl.c_str());
 		return false;
 	}
-
-	char szLine[4096];
-	CStdString strLine;
-	CStdString strInfo = "";
 
 	std::stringstream stream(strPlaylistContent);
 
@@ -223,12 +215,16 @@ bool PVRIptvData::LoadPlayList(void)
 	bool isfirst = true;
 
 	PVRIptvChannel tmpChannel;
-	memset(&tmpChannel, 0, sizeof(PVRIptvChannel));
 	tmpChannel.iTvgId = -1;
+	tmpChannel.strChannelName = "";
+	tmpChannel.strTvgName = "";
+	tmpChannel.strIconPath = "";
 
+	char szLine[1024];
 	while(stream.getline(szLine, 1024)) 
 	{
-		strLine = szLine;
+		CStdString strLine = "";
+		strLine.append(szLine);
 		strLine.TrimRight(" \t\r\n");
 		strLine.TrimLeft(" \t");
 
@@ -247,8 +243,7 @@ bool PVRIptvData::LoadPlayList(void)
 			}
 			else
 			{
-				// bad file
-				return false;
+				break;
 			}
 		}
 
@@ -272,7 +267,7 @@ bool PVRIptvData::LoadPlayList(void)
 				if (strChnlName.IsEmpty()) {
 					strChnlName.Format("IPTV Channel %d", iChannelNum + 1);
 				}
-				tmpChannel.strChannelName = XBMC->UnknownToUTF8(strChnlName);
+				tmpChannel.strChannelName = strChnlName;
 
 				// parse info
 				iColon++;
@@ -290,7 +285,7 @@ bool PVRIptvData::LoadPlayList(void)
 				  
 					if (iTvgIdEndPos >= 0)
 					{
-						iTvgId = atoi(strInfoLine.substr(iTvgIdPos, iTvgIdEndPos - iTvgIdPos).c_str());
+						iTvgId = atoi(strInfoLine.Mid(iTvgIdPos, iTvgIdEndPos - iTvgIdPos).c_str());
 					}
 				}
 				else
@@ -307,7 +302,7 @@ bool PVRIptvData::LoadPlayList(void)
 				  
 					if (iTvgNameEndPos >= 0)
 					{
-						strTvgName = strInfoLine.substr(iTvgNamePos, iTvgNameEndPos - iTvgNamePos);
+						strTvgName = strInfoLine.Mid(iTvgNamePos, iTvgNameEndPos - iTvgNamePos);
 					}
 				}
 
@@ -320,7 +315,7 @@ bool PVRIptvData::LoadPlayList(void)
 				  
 					if (iTvgLogoEndPos >= 0)
 					{
-						strTvgLogo = strInfoLine.substr(iTvgLogoPos, iTvgLogoEndPos - iTvgLogoPos);
+						strTvgLogo = strInfoLine.Mid(iTvgLogoPos, iTvgLogoEndPos - iTvgLogoPos);
 						strTvgLogo = XBMC->UnknownToUTF8(strTvgLogo);
 
 						if (!strTvgLogo.IsEmpty()) {
@@ -346,7 +341,7 @@ bool PVRIptvData::LoadPlayList(void)
 				  
 					if (iGroupNameEndPos >= 0)
 					{
-						strGroupName = strInfoLine.substr(iGroupNamePos, iGroupNameEndPos - iGroupNamePos);
+						strGroupName = strInfoLine.Mid(iGroupNamePos, iGroupNameEndPos - iGroupNamePos);
 
 						PVRIptvChannelGroup group;
 						group.strGroupName = XBMC->UnknownToUTF8(strGroupName);
@@ -369,8 +364,6 @@ bool PVRIptvData::LoadPlayList(void)
 			if (!strChnlName.IsEmpty() && !strLine.IsEmpty())
 			{
 				PVRIptvChannel channel;
-				memset(&channel, 0, sizeof(PVRIptvChannel));
-
 				channel.iUniqueId		= ++iUniqueChannelId;
 				channel.iChannelNumber	= ++iChannelNum;
 				channel.iTvgId			= tmpChannel.iTvgId;
@@ -378,7 +371,6 @@ bool PVRIptvData::LoadPlayList(void)
 				channel.strTvgName		= tmpChannel.strTvgName;
 				channel.strIconPath		= tmpChannel.strIconPath;
 				channel.strStreamURL	= strLine;
-
 				channel.iEncryptionSystem = 0;
 				channel.bRadio = false;
 
@@ -402,8 +394,10 @@ bool PVRIptvData::LoadPlayList(void)
 	if (m_channels.size() == 0)
 	{
 		XBMC->Log(LOG_ERROR, "invalid palylist data (no/invalid channels found at '%s')", m_strM3uUrl.c_str());
+		return false;
 	}
 
+	XBMC->Log(LOG_NOTICE, "Loaded %d channels.", m_channels.size());
 	return true;
 }
 
@@ -764,13 +758,15 @@ CStdString PVRIptvData::GetCachedFileContents(const char * strCachedName, const 
 	CStdString strResult;
 	if (bNeedReload) {
 	  strResult = GetFileContents(strFilePath);
+	  if (!strResult.IsEmpty()) 
+	  {
+		  void* fileHandle = XBMC->OpenFileForWrite(strCachedPath.c_str(), true);
 
-	  void* fileHandle = XBMC->OpenFileForWrite(strCachedPath.c_str(), true);
-
-      if (fileHandle)
-      {
-          XBMC->WriteFile(fileHandle, strResult.c_str(), strResult.length());
-          XBMC->CloseFile(fileHandle);
+		  if (fileHandle)
+		  {
+			  XBMC->WriteFile(fileHandle, strResult.c_str(), strResult.length());
+			  XBMC->CloseFile(fileHandle);
+		  }
 	  }
 	} else {
 		strResult = GetFileContents(strCachedPath);

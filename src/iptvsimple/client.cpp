@@ -128,6 +128,13 @@ ADDON_STATUS ADDON_Create(void* hdl, void* props)
   g_strUserPath   = pvrprops->strUserPath;
   g_strClientPath = pvrprops->strClientPath;
 
+#ifndef _WIN32
+  if (!XBMC->DirectoryExists(g_strUserPath.c_str()))
+  {
+	  XBMC->CreateDirectory(g_strUserPath.c_str());
+  }
+#endif
+
   ADDON_ReadSettings();
 
   m_data = new PVRIptvData;
@@ -194,7 +201,7 @@ PVR_ERROR GetAddonCapabilities(PVR_ADDON_CAPABILITIES* pCapabilities)
   pCapabilities->bSupportsTV              = true;
   pCapabilities->bSupportsRadio           = false;
   pCapabilities->bSupportsChannelGroups   = true;
-  pCapabilities->bSupportsRecordings      = true;
+  pCapabilities->bSupportsRecordings      = false;
 
   return PVR_ERROR_NO_ERROR;
 }
