@@ -1,7 +1,6 @@
 #pragma once
 /*
- *      Copyright (C) 2011 Pulse-Eight
- *      http://www.pulse-eight.com/
+ *      Copyright (C) 2013 Anton Fedchin
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -101,13 +100,10 @@ public:
   virtual int GetChannelsAmount(void);
   virtual PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio);
   virtual bool GetChannel(const PVR_CHANNEL &channel, PVRIptvChannel &myChannel);
-
   virtual int GetChannelGroupsAmount(void);
   virtual PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio);
   virtual PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP &group);
-
   virtual PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &channel, time_t iStart, time_t iEnd);
-
   virtual int GetRecordingsAmount(void);
   virtual PVR_ERROR GetRecordings(ADDON_HANDLE handle);
 
@@ -118,9 +114,7 @@ protected:
   virtual PVRIptvEpgChannel * FindEgpChannelById(int iId);
   virtual PVRIptvEpgChannel * FindEgpChannelByPvrChannel(PVRIptvChannel &pvrChannel);
   virtual int ParseDateTime(CStdString strDate, bool iDateFormat = true);
-
   virtual bool gzipInflate( const std::string& compressedBytes, std::string& uncompressedBytes);
-
   virtual CStdString GetCachedFileContents(const char * strCachedName, const char * strFilePath);
 
 protected:
@@ -132,7 +126,6 @@ private:
   std::vector<PVRIptvChannel>		m_channels;
   std::vector<PVRIptvRecording>		m_recordings;
   bool								m_bEGPLoaded;
-  time_t							m_iEpgStart;
   CStdString						m_strDefaultIcon;
   CStdString						m_strXMLTVUrl;
   CStdString						m_strM3uUrl;

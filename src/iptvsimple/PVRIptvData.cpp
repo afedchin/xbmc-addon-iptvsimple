@@ -1,6 +1,5 @@
 /*
- *      Copyright (C) 2011 Pulse-Eight
- *      http://www.pulse-eight.com/
+ *      Copyright (C) 2013 Anton Fedchin
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,9 +22,9 @@
 #include <string>
 #include <fstream>
 #include <map>
+#include <zlib.h>
 #include "tinyxml/XMLUtils.h"
 #include "PVRIptvData.h"
-#include <zlib.h>
 
 #define M3U_FILE_NAME         "iptv.m3u"
 #define M3U_START_MARKER      "#EXTM3U"
@@ -43,12 +42,9 @@ using namespace ADDON;
 
 PVRIptvData::PVRIptvData(void)
 {
-  m_iEpgStart = -1;
-  m_strDefaultIcon =  "http://www.royalty-free.tv/news/wp-content/uploads/2011/06/cc-logo1.jpg";
-
   m_strXMLTVUrl = g_strTvgPath;
   m_strM3uUrl = g_strM3UPath;
-
+  m_strDefaultIcon = GetClientFilePath("icon.png");
   m_bEGPLoaded = false;
 
   if (LoadPlayList() && m_channels.size() > 0)
@@ -59,17 +55,7 @@ PVRIptvData::PVRIptvData(void)
 
 void *PVRIptvData::Process(void)
 {
-	m_bEGPLoaded = false;
-
-	XBMC->QueueNotification(QUEUE_INFO, "Start EPG loading.");
-
-	if (LoadEPG())
-	{
-		XBMC->QueueNotification(QUEUE_INFO, "EPG data is loaded.");
-	}
-
-	m_bEGPLoaded = true;
-
+	LoadEPG();
 	return NULL;
 }
 
@@ -82,35 +68,39 @@ PVRIptvData::~PVRIptvData(void)
 
 bool PVRIptvData::LoadEPG(void) 
 {
+	XBMC->QueueNotification(QUEUE_INFO, "Start EPG loading.");
+
 	CStdString strXML = GetCachedFileContents(TVG_FILE_NAME, m_strXMLTVUrl);
 
 	if (strXML.IsEmpty()) 
 	{
-		XBMC->Log(LOG_ERROR, "invalid EPG data (no/invalid data found at '%s')", m_strXMLTVUrl.c_str());
+		XBMC->Log(LOG_ERROR, "Unable to load EPG file '%s':  file is missing or empty.", m_strXMLTVUrl.c_str());
 		return false;
 	}
 
-	if (strXML.Left(3) == "\x1F\x8B\x08") {
+	if (strXML.Left(3) == "\x1F\x8B\x08") 
+	{
 		std::string data;
 		if (!gzipInflate(strXML, data))
 		{
-			XBMC->Log(LOG_ERROR, "invalid EPG data (no/invalid data found at '%s')", m_strXMLTVUrl.c_str());
+			XBMC->Log(LOG_ERROR, "Invalid EPG file '%s': unable to decompress file.", m_strXMLTVUrl.c_str());
 			return false;
 		}
 		strXML = data;
 	}
 
     TiXmlDocument xmlDoc;
-	if (!xmlDoc.Parse(strXML))
+	xmlDoc.Parse(strXML);
+	if (xmlDoc.Error())
 	{
-		XBMC->Log(LOG_ERROR, "invalid EPG data (no/invalid data found at '%s')", m_strXMLTVUrl.c_str());
+		XBMC->Log(LOG_ERROR, "Unable parse EPG XML: %s at line %d", xmlDoc.ErrorDesc(), xmlDoc.ErrorRow());
 		return false;
 	}
 
     TiXmlElement *pRootElement = xmlDoc.RootElement();
     if (strcmp(pRootElement->Value(), "tv") != 0)
 	{
-		XBMC->Log(LOG_ERROR, "invalid EPG data (no <tv> tag found)");
+		XBMC->Log(LOG_ERROR, "Invalid EPG XML: no <tv> tag found");
 		return false;
 	}
 
@@ -126,7 +116,8 @@ bool PVRIptvData::LoadEPG(void)
 		CStdString strName;
 	
 		pElement->Attribute("id", &iChannelId);
-		if (iChannelId <= 0) {
+		if (iChannelId <= 0) 
+		{
 			continue;
 		}
 		if (!XMLUtils::GetString(pChannelNode, "display-name", strName))
@@ -151,14 +142,18 @@ bool PVRIptvData::LoadEPG(void)
     while ((pChannelNode = pRootElement->IterateChildren("programme", pChannelNode)) != NULL)
 	{
 		TiXmlElement *pElement = pChannelNode->ToElement();
+
 		int iChannelId = -1;
 		pElement->Attribute("channel", &iChannelId);
-
-		if (iChannelId <= 0)
+		if (iChannelId <= 0) 
+		{
 			continue;
+		}
 
-		if (currentChannel == NULL || currentChannel->iId != iChannelId) {
-			if ((currentChannel = FindEgpChannelById(iChannelId)) == NULL) {
+		if (currentChannel == NULL || currentChannel->iId != iChannelId) 
+		{
+			if ((currentChannel = FindEgpChannelById(iChannelId)) == NULL) 
+			{
 				continue;
 			}
 		}
@@ -166,22 +161,17 @@ bool PVRIptvData::LoadEPG(void)
 		CStdString strTitle;
 		CStdString strCategory;
 		CStdString strDesc;
-		int iTmpStart;
-		int iTmpEnd;
 
-		iTmpStart = ParseDateTime(pElement->Attribute("start"));
-		iTmpEnd = ParseDateTime(pElement->Attribute("stop"));
-
+		int iTmpStart = ParseDateTime(pElement->Attribute("start"));;
+		int iTmpEnd = ParseDateTime(pElement->Attribute("stop"));
 		XMLUtils::GetString(pChannelNode, "title", strTitle);
 		XMLUtils::GetString(pChannelNode, "category", strCategory);
 		XMLUtils::GetString(pChannelNode, "desc", strDesc);
 
 		PVRIptvEpgEntry entry;
-
 		entry.iBroadcastId = ++iBroadCastId;
 		entry.iGenreType = 0;
 		entry.iGenreSubType = 0;
-
 		entry.strTitle = strTitle;
 		entry.strPlot = strDesc;
 		entry.strPlotOutline = "";
@@ -194,6 +184,9 @@ bool PVRIptvData::LoadEPG(void)
 	m_bEGPLoaded = true;
 
 	XBMC->Log(LOG_NOTICE, "Loaded EPG for %d channels.", m_egpChannels.size());
+
+	XBMC->QueueNotification(QUEUE_INFO, "Loading EPG complete.");
+
 	return true;
 }
 
@@ -202,7 +195,7 @@ bool PVRIptvData::LoadPlayList(void)
 	CStdString strPlaylistContent = GetCachedFileContents(M3U_FILE_NAME, m_strM3uUrl);
 	if (strPlaylistContent.IsEmpty())
 	{
-		XBMC->Log(LOG_ERROR, "invalid palylist data (no/invalid data found at '%s')", m_strM3uUrl.c_str());
+		XBMC->Log(LOG_ERROR, "Unable to load playlist file '%s':  file is missing or empty.", m_strM3uUrl.c_str());
 		return false;
 	}
 
@@ -231,12 +224,10 @@ bool PVRIptvData::LoadPlayList(void)
 		if (isfirst) 
 		{
 			isfirst = false;
-
 			if (strLine.Left(3) == "\xEF\xBB\xBF")
 			{
 				strLine.Delete(0, 3);
 			}
-
 			if (strLine.Left((int)strlen(M3U_START_MARKER)) == M3U_START_MARKER) 
 			{
 				continue;
@@ -264,7 +255,8 @@ bool PVRIptvData::LoadPlayList(void)
 				// parse name
 				iComma++;
 				strChnlName = strLine.Right((int)strLine.size() - iComma);
-				if (strChnlName.IsEmpty()) {
+				if (strChnlName.IsEmpty()) 
+				{
 					strChnlName.Format("IPTV Channel %d", iChannelNum + 1);
 				}
 				tmpChannel.strChannelName = strChnlName;
@@ -282,7 +274,6 @@ bool PVRIptvData::LoadPlayList(void)
 				{
 					iTvgIdPos += sizeof(TVG_INFO_ID_MARKER) - 1;
 					int iTvgIdEndPos = (int)strInfoLine.Find('"', iTvgIdPos);
-				  
 					if (iTvgIdEndPos >= 0)
 					{
 						iTvgId = atoi(strInfoLine.Mid(iTvgIdPos, iTvgIdEndPos - iTvgIdPos).c_str());
@@ -292,33 +283,30 @@ bool PVRIptvData::LoadPlayList(void)
 				{
 					iTvgId = atoi(strInfoLine.c_str());
 				}
-
 				tmpChannel.iTvgId = iTvgId;
 
 				if (iTvgNamePos >= 0) 
 				{
 					iTvgNamePos += sizeof(TVG_INFO_NAME_MARKER) - 1;
 					int iTvgNameEndPos = (int)strInfoLine.Find('"', iTvgNamePos);
-				  
 					if (iTvgNameEndPos >= 0)
 					{
 						strTvgName = strInfoLine.Mid(iTvgNamePos, iTvgNameEndPos - iTvgNamePos);
 					}
 				}
-
 				tmpChannel.strTvgName = XBMC->UnknownToUTF8(strTvgName);
 
 				if (iTvgLogoPos >= 0) 
 				{
 					iTvgLogoPos += sizeof(TVG_INFO_LOGO_MARKER) - 1;
 					int iTvgLogoEndPos = (int)strInfoLine.Find('"', iTvgLogoPos);
-				  
 					if (iTvgLogoEndPos >= 0)
 					{
 						strTvgLogo = strInfoLine.Mid(iTvgLogoPos, iTvgLogoEndPos - iTvgLogoPos);
 						strTvgLogo = XBMC->UnknownToUTF8(strTvgLogo);
 
-						if (!strTvgLogo.IsEmpty()) {
+						if (!strTvgLogo.IsEmpty()) 
+						{
 							strTvgLogo = GetClientFilePath("icons/" + strTvgLogo);
 							strTvgLogo.append(".png");
 						}
@@ -338,7 +326,6 @@ bool PVRIptvData::LoadPlayList(void)
 				{
 					iGroupNamePos += sizeof(GROUP_NAME_MARKER) - 1;
 					int iGroupNameEndPos = (int)strInfoLine.Find('"', iGroupNamePos);
-				  
 					if (iGroupNameEndPos >= 0)
 					{
 						strGroupName = strInfoLine.Mid(iGroupNamePos, iGroupNameEndPos - iGroupNamePos);
@@ -393,7 +380,7 @@ bool PVRIptvData::LoadPlayList(void)
 
 	if (m_channels.size() == 0)
 	{
-		XBMC->Log(LOG_ERROR, "invalid palylist data (no/invalid channels found at '%s')", m_strM3uUrl.c_str());
+		XBMC->Log(LOG_ERROR, "Unable to load channels from file '%s':  file is corrupted.", m_strM3uUrl.c_str());
 		return false;
 	}
 
@@ -513,18 +500,23 @@ PVR_ERROR PVRIptvData::GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &
 	{
 		PVRIptvChannel &myChannel = m_channels.at(iChannelPtr);
 		if (myChannel.iUniqueId != (int) channel.iUniqueId)
+		{
 			continue;
+		}
 
-		if (!m_bEGPLoaded) {
+		if (!m_bEGPLoaded) 
+		{
 			LoadEPG();
 		}
 
 		PVRIptvEpgChannel *egpChannel = NULL;
-		if ((egpChannel = FindEgpChannelByPvrChannel(myChannel)) == NULL) {
+		if ((egpChannel = FindEgpChannelByPvrChannel(myChannel)) == NULL) 
+		{
 			return PVR_ERROR_NO_ERROR;
 		}
 
-		if (egpChannel->epg.size() == 0) {
+		if (egpChannel->epg.size() == 0) 
+		{
 			return PVR_ERROR_NO_ERROR;
 		}
 
@@ -594,35 +586,38 @@ PVR_ERROR PVRIptvData::GetRecordings(ADDON_HANDLE handle)
 
 CStdString PVRIptvData::GetFileContents(CStdString& url)
 {
-  CStdString strResult;
-  void* fileHandle = XBMC->OpenFile(url.c_str(), 0);
+	CStdString strResult;
+	void* fileHandle = XBMC->OpenFile(url.c_str(), 0);
 
-  if (fileHandle)
-  {
-    char buffer[1024];
-    while (int bytesRead = XBMC->ReadFile(fileHandle, buffer, 1024))
-      strResult.append(buffer, bytesRead);
-    XBMC->CloseFile(fileHandle);
-  }
-  return strResult;
+	if (fileHandle)
+	{
+		char buffer[1024];
+		while (int bytesRead = XBMC->ReadFile(fileHandle, buffer, 1024))
+			strResult.append(buffer, bytesRead);
+		XBMC->CloseFile(fileHandle);
+	}
+	return strResult;
 }
 
 int PVRIptvData::ParseDateTime(CStdString strDate, bool iDateFormat)
 {
-  struct tm timeinfo;
+	struct tm timeinfo;
+	memset(&timeinfo, 0, sizeof(tm));
 
-  memset(&timeinfo, 0, sizeof(tm));
+	if (iDateFormat)
+	{
+		sscanf(strDate, "%04d%02d%02d%02d%02d%02d", &timeinfo.tm_year, &timeinfo.tm_mon, &timeinfo.tm_mday, &timeinfo.tm_hour, &timeinfo.tm_min, &timeinfo.tm_sec);
+	}
+	else
+	{
+		sscanf(strDate, "%02d.%02d.%04d%02d:%02d:%02d", &timeinfo.tm_mday, &timeinfo.tm_mon, &timeinfo.tm_year, &timeinfo.tm_hour, &timeinfo.tm_min, &timeinfo.tm_sec);
+	}
 
-  if (iDateFormat)
-    sscanf(strDate, "%04d%02d%02d%02d%02d%02d", &timeinfo.tm_year, &timeinfo.tm_mon, &timeinfo.tm_mday, &timeinfo.tm_hour, &timeinfo.tm_min, &timeinfo.tm_sec);
-  else
-    sscanf(strDate, "%02d.%02d.%04d%02d:%02d:%02d", &timeinfo.tm_mday, &timeinfo.tm_mon, &timeinfo.tm_year, &timeinfo.tm_hour, &timeinfo.tm_min, &timeinfo.tm_sec);
+	timeinfo.tm_mon  -= 1;
+	timeinfo.tm_year -= 1900;
+	timeinfo.tm_isdst = -1;
 
-  timeinfo.tm_mon  -= 1;
-  timeinfo.tm_year -= 1900;
-  timeinfo.tm_isdst = -1;
-
-  return mktime(&timeinfo);
+	return mktime(&timeinfo);
 }
 
 PVRIptvEpgChannel * PVRIptvData::FindEgpChannelById(int iId)
@@ -639,7 +634,7 @@ PVRIptvEpgChannel * PVRIptvData::FindEgpChannelById(int iId)
 	return NULL;
 }
 
-PVRIptvEpgChannel * PVRIptvData::FindEgpChannelByPvrChannel(PVRIptvChannel &pvrChannel/*, PVRIptvEpgChannel &found*/)
+PVRIptvEpgChannel * PVRIptvData::FindEgpChannelByPvrChannel(PVRIptvChannel &pvrChannel)
 {
 	CStdString strName = pvrChannel.strChannelName;
 	CStdString strTvgName = pvrChannel.strTvgName;
@@ -649,22 +644,20 @@ PVRIptvEpgChannel * PVRIptvData::FindEgpChannelByPvrChannel(PVRIptvChannel &pvrC
 		PVRIptvEpgChannel &channel = m_egpChannels.at(i);
 		if (channel.iId == pvrChannel.iTvgId)
 		{
-			//found = channel;
 			return &channel;
 		}
 
 		CStdString strTmpName = channel.strName;
 		strTmpName.Replace(' ', '_');
-
-		if (strTvgName.Equals(strTmpName)) {
-			//found = channel;
+		if (strTvgName.Equals(strTmpName)) 
+		{
 			return &channel;
 		}
 
 		strTmpName = channel.strName;
 
-		if (strName.Equals(strTmpName)) {
-			//found = channel;
+		if (strName.Equals(strTmpName)) 
+		{
 			return &channel;
 		}
 	}
@@ -673,7 +666,8 @@ PVRIptvEpgChannel * PVRIptvData::FindEgpChannelByPvrChannel(PVRIptvChannel &pvrC
 }
 
 bool PVRIptvData::gzipInflate( const std::string& compressedBytes, std::string& uncompressedBytes ) {  
-  if ( compressedBytes.size() == 0 ) {  
+  if ( compressedBytes.size() == 0 ) 
+  {  
     uncompressedBytes = compressedBytes ;  
     return true ;  
   }  
@@ -695,14 +689,17 @@ bool PVRIptvData::gzipInflate( const std::string& compressedBytes, std::string& 
   
   bool done = false ;  
   
-  if (inflateInit2(&strm, (16+MAX_WBITS)) != Z_OK) {  
+  if (inflateInit2(&strm, (16+MAX_WBITS)) != Z_OK) 
+  {  
     free( uncomp );  
     return false;  
   }  
   
-  while (!done) {  
+  while (!done) 
+  {  
     // If our output buffer is too small  
-    if (strm.total_out >= uncompLength ) {  
+    if (strm.total_out >= uncompLength ) 
+	{  
       // Increase size of output buffer  
       char* uncomp2 = (char*) calloc( sizeof(char), uncompLength + half_length );  
       memcpy( uncomp2, uncomp, uncompLength );  
@@ -717,19 +714,23 @@ bool PVRIptvData::gzipInflate( const std::string& compressedBytes, std::string& 
     // Inflate another chunk.  
     int err = inflate (&strm, Z_SYNC_FLUSH);  
     if (err == Z_STREAM_END) done = true;  
-    else if (err != Z_OK)  {  
+    else if (err != Z_OK)  
+	{  
       break;  
     }  
   }  
   
-  if (inflateEnd (&strm) != Z_OK) {  
+  if (inflateEnd (&strm) != Z_OK) 
+  {  
     free( uncomp );  
     return false;  
   }  
   
-  for ( size_t i=0; i<strm.total_out; ++i ) {  
+  for ( size_t i=0; i<strm.total_out; ++i ) 
+  {  
     uncompressedBytes += uncomp[ i ];  
   }  
+
   free( uncomp );  
   return true ;  
 }  
@@ -740,35 +741,37 @@ CStdString PVRIptvData::GetCachedFileContents(const char * strCachedName, const 
 	CStdString strFilePath = filePath;
 	bool bNeedReload = false;
 
-	if (XBMC->FileExists(strCachedPath, false)) {
+	if (XBMC->FileExists(strCachedPath, false)) 
+	{
 		struct __stat64 statCached;
 		struct __stat64 statOrig;
 
 		XBMC->StatFile(strCachedPath.c_str(), &statCached);
 		XBMC->StatFile(strFilePath.c_str(), &statOrig);
 
-		if (statCached.st_mtime < statOrig.st_mtime) {
-			bNeedReload = true;
-		}
-
-	} else {
+		bNeedReload = statCached.st_mtime < statOrig.st_mtime;
+	} 
+	else 
+	{
 		bNeedReload = true;
 	}
 
 	CStdString strResult;
-	if (bNeedReload) {
-	  strResult = GetFileContents(strFilePath);
-	  if (!strResult.IsEmpty()) 
-	  {
-		  void* fileHandle = XBMC->OpenFileForWrite(strCachedPath.c_str(), true);
-
-		  if (fileHandle)
-		  {
-			  XBMC->WriteFile(fileHandle, strResult.c_str(), strResult.length());
-			  XBMC->CloseFile(fileHandle);
-		  }
-	  }
-	} else {
+	if (bNeedReload) 
+	{
+		strResult = GetFileContents(strFilePath);
+		if (!strResult.IsEmpty()) 
+		{
+			void* fileHandle = XBMC->OpenFileForWrite(strCachedPath.c_str(), true);
+			if (fileHandle)
+			{
+				XBMC->WriteFile(fileHandle, strResult.c_str(), strResult.length());
+				XBMC->CloseFile(fileHandle);
+			}
+		}
+	} 
+	else 
+	{
 		strResult = GetFileContents(strCachedPath);
 	}
 

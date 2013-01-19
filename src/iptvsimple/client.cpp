@@ -1,6 +1,5 @@
 /*
- *      Copyright (C) 2011 Pulse-Eight
- *      http://www.pulse-eight.com/
+ *      Copyright (C) 2013 Anton Fedchin
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -57,10 +56,12 @@ std::string PathCombine(const char* strPath, const char * strFileName)
 {
 	std::string strResult = strPath;
     if (strResult.at(strResult.size() - 1) == '\\' ||
-        strResult.at(strResult.size() - 1) == '/') {
+        strResult.at(strResult.size() - 1) == '/') 
+	{
       strResult.append(strFileName);
 	}
-	else {
+	else 
+	{
       strResult.append("/");
       strResult.append(strFileName);
 	}
@@ -82,28 +83,34 @@ extern "C" {
 
 void ADDON_ReadSettings(void)
 {
-  char buffer[1024];
-  if (XBMC->GetSetting("tvgPath", &buffer)) {
-	g_strTvgPath = buffer;
-  }
+	char buffer[1024];
+	if (XBMC->GetSetting("tvgPath", &buffer)) 
+	{
+		g_strTvgPath = buffer;
+	}
 
-  if (g_strTvgPath == "") {
-	  g_strTvgPath = DEFAULT_TVG_PATH;
-  }
+	if (g_strTvgPath == "") 
+	{
+		g_strTvgPath = DEFAULT_TVG_PATH;
+	}
 
-  if (XBMC->GetSetting("m3uPath", &buffer)) {
-	g_strM3UPath = buffer;
-  } 
+	if (XBMC->GetSetting("m3uPath", &buffer)) 
+	{
+		g_strM3UPath = buffer;
+	} 
 
-  if (g_strM3UPath == "") {
-	  g_strM3UPath = GetClientFilePath(M3U_FILE_NAME);
-  }
+	if (g_strM3UPath == "") 
+	{
+		g_strM3UPath = GetClientFilePath(M3U_FILE_NAME);
+	}
 }
 
 ADDON_STATUS ADDON_Create(void* hdl, void* props)
 {
   if (!hdl || !props)
+  {
     return ADDON_STATUS_UNKNOWN;
+  }
 
   PVR_PROPERTIES* pvrprops = (PVR_PROPERTIES*)props;
 
