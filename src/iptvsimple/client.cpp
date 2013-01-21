@@ -34,9 +34,6 @@ using namespace ADDON;
 #define snprintf _snprintf
 #endif
 
-#define DEFAULT_TVG_PATH       "http://www.teleguide.info/download/new3/xmltv.xml.gz"
-#define M3U_FILE_NAME          "iptv.m3u"
-
 bool           m_bCreated       = false;
 ADDON_STATUS   m_CurStatus      = ADDON_STATUS_UNKNOWN;
 PVRIptvData   *m_data           = NULL;
@@ -96,7 +93,7 @@ void ADDON_ReadSettings(void)
 	{
 		iPathType = 1;
 	}
-	CStdString strSettingName = iPathType ? "m3uPath" : "m3uUrl";
+	CStdString strSettingName = iPathType ? "m3uUrl" : "m3uPath";
 	if (XBMC->GetSetting(strSettingName, &buffer)) 
 	{
 		g_strM3UPath = buffer;
@@ -110,7 +107,7 @@ void ADDON_ReadSettings(void)
 	{
 		iPathType = 1;
 	}
-	strSettingName = iPathType ? "epgPath" : "epgUrl";
+	strSettingName = iPathType ? "epgUrl" : "epgPath";
 	if (XBMC->GetSetting(strSettingName, &buffer)) 
 	{
 		g_strTvgPath = buffer;
@@ -122,7 +119,7 @@ void ADDON_ReadSettings(void)
 	double dTimeShift = 0.0;
 	if (XBMC->GetSetting("epgTimeShift", &dTimeShift))
 	{
-		g_iEPGTimeShift = (int)(dTimeShift * 60.0); // hours to seconds
+		g_iEPGTimeShift = (int)(dTimeShift * 3600.0); // hours to seconds
 	}
 	if (!XBMC->GetSetting("epgTSOverride", &g_bTSOverride))
 	{
@@ -169,12 +166,14 @@ ADDON_STATUS ADDON_Create(void* hdl, void* props)
   g_strUserPath   = pvrprops->strUserPath;
   g_strClientPath = pvrprops->strClientPath;
 
-#ifndef _WIN32
   if (!XBMC->DirectoryExists(g_strUserPath.c_str()))
   {
+#ifdef _WIN32
+	  CreateDirectory(g_strUserPath.c_str(), NULL);
+#else
 	  XBMC->CreateDirectory(g_strUserPath.c_str());
-  }
 #endif
+  }
 
   ADDON_ReadSettings();
 
@@ -209,7 +208,100 @@ unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet)
 
 ADDON_STATUS ADDON_SetSetting(const char *settingName, const void *settingValue)
 {
-  return ADDON_STATUS_OK;
+	string str = settingName;
+	if (str == "m3uPathType" /*|| str == "m3uUrl" || str == "m3uPath"*/)
+	{
+		int iPathType = 0;
+		char buffer[1024];
+		string strTmp = g_strM3UPath;
+
+		if (!XBMC->GetSetting("m3uPathType", &iPathType)) 
+		{
+			iPathType = 1;
+		}
+		CStdString strName = iPathType ? "m3uUrl" : "m3uPath";
+		if (XBMC->GetSetting(strName, &buffer)) 
+		{
+			g_strM3UPath = buffer;
+		}
+		if (g_strM3UPath != strTmp) 
+		{
+			string strFile = GetUserFilePath(M3U_FILE_NAME);
+			if (XBMC->FileExists(strFile.c_str(), false))
+			{
+#ifdef _WIN32
+				DeleteFile(strFile.c_str());
+#else
+				XBMC->DeleteFile(strFile.c_str());
+#endif
+			}
+			// TODO inspecting crashes
+			// m_data->ReloadPlayList(g_strM3UPath.c_str());
+
+			return ADDON_STATUS_OK;
+		}
+	}
+	if (str == "epgPathType" /*|| str == "epgPath" || str == "epgUrl"*/)
+	{
+		int iPathType = 0;
+		char buffer[1024];
+		string strTmp = g_strTvgPath;
+
+		if (!XBMC->GetSetting("epgPathType", &iPathType)) 
+		{
+			iPathType = 1;
+		}
+		CStdString strName = iPathType ? "epgUrl" : "epgPath";
+		if (XBMC->GetSetting(strName, &buffer)) 
+		{
+			g_strTvgPath = buffer;
+		}
+		if (g_strTvgPath != strTmp) 
+		{
+			string strFile = GetUserFilePath(TVG_FILE_NAME);
+			if (XBMC->FileExists(strFile.c_str(), false))
+			{
+#ifdef _WIN32
+				DeleteFile(strFile.c_str());
+#else
+				XBMC->DeleteFile(strFile.c_str());
+#endif
+			}
+			// TODO inspecting crashes
+			//m_data->ReloadEPG(g_strTvgPath.c_str());
+
+			return ADDON_STATUS_OK;
+		}
+	}
+	if (str == "epgTimeShift")
+	{
+		double dTimeShift = *(double*) settingValue;
+		int iTimeShift = (int) (dTimeShift * 3600.0);
+		if (g_iEPGTimeShift != iTimeShift)
+		{
+			return ADDON_STATUS_OK;
+		}
+	}
+	if (str == "epgTSOverride")
+	{
+		bool bOverride = *(bool*) settingValue;
+		if (g_bTSOverride != bOverride)
+		{
+			return ADDON_STATUS_OK;
+		}
+	}
+	if (str == "logoPath")
+	{
+		std::string strTmp = g_strLogoPath;
+		g_strLogoPath = (const char*) settingValue;
+		if (g_strLogoPath != strTmp)
+		{
+			m_data->ReaplyChannelsLogos(g_strLogoPath.c_str());
+		}
+		return ADDON_STATUS_OK;
+	}
+
+	return ADDON_STATUS_OK;
 }
 
 void ADDON_Stop()

@@ -30,13 +30,11 @@
 #include "tinyxml/XMLUtils.h"
 #include "PVRIptvData.h"
 
-#define M3U_FILE_NAME          "iptv.m3u"
 #define M3U_START_MARKER       "#EXTM3U"
 #define M3U_INFO_MARKER        "#EXTINF"
 
 #define CHANNEL_LOGO_EXTENSION ".png"
 
-#define TVG_FILE_NAME          "xmltv.xml.gz"
 #define TVG_INFO_ID_MARKER     "tvg-id="
 #define TVG_INFO_NAME_MARKER   "tvg-name="
 #define TVG_INFO_LOGO_MARKER   "tvg-logo="
@@ -261,7 +259,7 @@ bool PVRIptvData::LoadPlayList(void)
 			if (strLine.Left((int)strlen(M3U_START_MARKER)) == M3U_START_MARKER) 
 			{
 				double fTvgShift = atof(ReadMarkerValue(strLine, TVG_INFO_SHIFT_MARKER));
-				iEPGTimeShift = (int) (fTvgShift * 60.0);
+				iEPGTimeShift = (int) (fTvgShift * 3600.0);
 				continue;
 			}
 			else
@@ -315,7 +313,7 @@ bool PVRIptvData::LoadPlayList(void)
 				tmpChannel.iTvgId = iTvgId;
 				tmpChannel.strTvgName = strTvgName;
 				tmpChannel.strTvgLogo = strTvgLogo;
-				tmpChannel.iTvgShift = (int)(fTvgShift * 60.0);
+				tmpChannel.iTvgShift = (int)(fTvgShift * 3600.0);
 
 				if (tmpChannel.iTvgShift == 0 && iEPGTimeShift != 0)
 				{
@@ -350,6 +348,7 @@ bool PVRIptvData::LoadPlayList(void)
 				channel.strChannelName	= tmpChannel.strChannelName;
 				channel.strTvgName		= tmpChannel.strTvgName;
 				channel.strTvgLogo		= tmpChannel.strTvgLogo;
+				channel.iTvgShift		= tmpChannel.iTvgShift;
 				channel.strStreamURL	= strLine;
 				channel.iEncryptionSystem = 0;
 				channel.bRadio = false;
@@ -522,7 +521,7 @@ PVR_ERROR PVRIptvData::GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &
 
 			int iShift = m_bTSOverride ? m_iEPGTimeShift : myChannel.iTvgShift + m_iEPGTimeShift;
 
-			if (myTag.endTime + iShift < iStart) 
+			if ((myTag.endTime + iShift) < iStart) 
 				continue;
 
 			EPG_TAG tag;
@@ -541,7 +540,7 @@ PVR_ERROR PVRIptvData::GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &
 
 			PVR->TransferEpgEntry(handle, &tag);
 
-			if (myTag.startTime + iShift > iEnd)
+			if ((myTag.startTime + iShift) > iEnd)
 				break;
 		}
 
@@ -791,6 +790,54 @@ void PVRIptvData::ApplyChannelsLogos()
 	}
 }
 
+void PVRIptvData::ReaplyChannelsLogos(const char * strNewPath)
+{
+	if (strNewPath != "")
+	{
+		m_strLogoPath = strNewPath;
+		ApplyChannelsLogos();
+
+		PVR->TriggerChannelUpdate();
+		PVR->TriggerChannelGroupsUpdate();
+	}
+
+	return;
+}
+
+void PVRIptvData::ReloadEPG(const char * strNewPath)
+{
+	if (strNewPath != m_strXMLTVUrl)
+	{
+		m_strXMLTVUrl = strNewPath;
+		m_bEGPLoaded = false;
+		m_egpChannels.clear();
+
+		if (LoadEPG())
+		{
+			for(unsigned int iChannelPtr = 0, max = m_channels.size(); iChannelPtr < max; iChannelPtr++)
+			{
+				PVRIptvChannel &myChannel = m_channels.at(iChannelPtr);
+				PVR->TriggerEpgUpdate(myChannel.iUniqueId);
+			}
+		}
+	}
+}
+
+void PVRIptvData::ReloadPlayList(const char * strNewPath)
+{
+	if (strNewPath != m_strM3uUrl)
+	{
+		m_strM3uUrl = strNewPath;
+		m_channels.clear();
+
+		if (LoadPlayList())
+		{
+			PVR->TriggerChannelUpdate();
+			PVR->TriggerChannelGroupsUpdate();
+		}
+	}
+}
+
 CStdString PVRIptvData::ReadMarkerValue(CStdString strLine, const char* strMarkerName)
 {
 	CStdString strResult;
@@ -800,18 +847,21 @@ CStdString PVRIptvData::ReadMarkerValue(CStdString strLine, const char* strMarke
 	{
 		std::string strMarker = strMarkerName;
 		iMarkerStart += strMarker.length();
-		char cFind = ' ';
-		if (strLine[iMarkerStart] == '"')
+		if (iMarkerStart < strLine.length())
 		{
-			cFind = '"';
-			iMarkerStart++;
+			char cFind = ' ';
+			if (strLine[iMarkerStart] == '"')
+			{
+				cFind = '"';
+				iMarkerStart++;
+			}
+			int iMarkerEnd = (int)strLine.Find(cFind, iMarkerStart);
+			if (iMarkerEnd < 0)
+			{
+				iMarkerEnd = strLine.length();
+			}
+			strResult = strLine.Mid(iMarkerStart, iMarkerEnd - iMarkerStart);
 		}
-		int iMarkerEnd = (int)strLine.Find(cFind, iMarkerStart);
-		if (iMarkerEnd < 0)
-		{
-			iMarkerEnd = strLine.length();
-		}
-		strResult = strLine.Mid(iMarkerStart, iMarkerEnd - iMarkerStart);
 	}
 
 	return strResult;

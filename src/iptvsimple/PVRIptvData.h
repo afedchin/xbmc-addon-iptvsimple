@@ -111,6 +111,10 @@ public:
   virtual int GetRecordingsAmount(void);
   virtual PVR_ERROR GetRecordings(ADDON_HANDLE handle);
 
+  virtual void ReaplyChannelsLogos(const char * strNewPath);
+  virtual void ReloadPlayList(const char * strNewPath);
+  virtual void ReloadEPG(const char * strNewPath);
+
 protected:
   virtual bool LoadPlayList(void);
   virtual bool LoadEPG(void);

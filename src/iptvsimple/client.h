@@ -26,6 +26,10 @@
 #include "libXBMC_addon.h"
 #include "libXBMC_pvr.h"
 
+#define M3U_FILE_NAME          "iptv.m3u"
+#define TVG_FILE_NAME          "xmltv.xml.gz"
+#define DEFAULT_TVG_PATH       "http://www.teleguide.info/download/new3/xmltv.xml.gz"
+
 extern bool                          m_bCreated;
 extern std::string                   g_strUserPath;
 extern std::string                   g_strClientPath;
