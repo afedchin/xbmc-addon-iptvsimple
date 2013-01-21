@@ -128,10 +128,9 @@ private:
   std::vector<PVRIptvChannel>		m_channels;
   std::vector<PVRIptvRecording>		m_recordings;
   bool								m_bEGPLoaded;
-  CStdString						m_strDefaultIcon;
   CStdString						m_strXMLTVUrl;
   CStdString						m_strM3uUrl;
   CStdString						m_strLogoPath;
   int                               m_iEPGTimeShift;
-  bool                              g_bTSOverride;
+  bool                              m_bTSOverride;
 };

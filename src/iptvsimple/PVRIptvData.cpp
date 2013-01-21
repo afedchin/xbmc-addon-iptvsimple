@@ -26,17 +26,19 @@
 #include "tinyxml/XMLUtils.h"
 #include "PVRIptvData.h"
 
-#define M3U_FILE_NAME         "iptv.m3u"
-#define M3U_START_MARKER      "#EXTM3U"
-#define M3U_INFO_MARKER       "#EXTINF"
+#define M3U_FILE_NAME          "iptv.m3u"
+#define M3U_START_MARKER       "#EXTM3U"
+#define M3U_INFO_MARKER        "#EXTINF"
 
-#define TVG_FILE_NAME         "xmltv.xml.gz"
-#define TVG_INFO_ID_MARKER    "tvg-id="
-#define TVG_INFO_NAME_MARKER  "tvg-name="
-#define TVG_INFO_LOGO_MARKER  "tvg-logo="
-#define TVG_INFO_SHIFT_MARKER "tvg-shift="
+#define CHANNEL_LOGO_EXTENSION ".png"
 
-#define GROUP_NAME_MARKER     "group-title="
+#define TVG_FILE_NAME          "xmltv.xml.gz"
+#define TVG_INFO_ID_MARKER     "tvg-id="
+#define TVG_INFO_NAME_MARKER   "tvg-name="
+#define TVG_INFO_LOGO_MARKER   "tvg-logo="
+#define TVG_INFO_SHIFT_MARKER  "tvg-shift="
+
+#define GROUP_NAME_MARKER      "group-title="
 
 using namespace std;
 using namespace ADDON;
@@ -45,16 +47,15 @@ PVRIptvData::PVRIptvData(void)
 {
   m_strXMLTVUrl    = g_strTvgPath;
   m_strM3uUrl      = g_strM3UPath;
-  m_strDefaultIcon = GetClientFilePath("icon.png");
   m_strLogoPath    = g_strLogoPath;
   m_iEPGTimeShift  = g_iEPGTimeShift;
-  g_bTSOverride    = g_bTSOverride;
+  m_bTSOverride    = g_bTSOverride;
 
   m_bEGPLoaded = false;
 
-  if (LoadPlayList() && m_channels.size() > 0)
+  if (LoadPlayList())
   {
-	  XBMC->QueueNotification(QUEUE_INFO, "Channels loaded.");
+	  XBMC->QueueNotification(QUEUE_INFO, "%d channels loaded.", m_channels.size());
   }
 }
 
@@ -75,11 +76,26 @@ bool PVRIptvData::LoadEPG(void)
 {
 	XBMC->QueueNotification(QUEUE_INFO, "Start EPG loading.");
 
-	CStdString strXML = GetCachedFileContents(TVG_FILE_NAME, m_strXMLTVUrl);
-
-	if (strXML.IsEmpty()) 
+	CStdString strXML;
+	int iCount = 0;
+	while(iCount < 3) // max 3 tries
 	{
-		XBMC->Log(LOG_ERROR, "Unable to load EPG file '%s':  file is missing or empty.", m_strXMLTVUrl.c_str());
+		strXML = GetCachedFileContents(TVG_FILE_NAME, m_strXMLTVUrl);
+		if (!strXML.IsEmpty()) 
+		{
+			break;
+		}
+		XBMC->Log(LOG_ERROR, "Unable to load EPG file '%s':  file is missing or empty. :%dth try.", m_strXMLTVUrl.c_str(), ++iCount);
+		if (iCount < 3)
+		{
+			usleep(5 * 1000 * 1000); // sleep 5 sec before next try.
+		}
+	}
+	
+	if (strXML.IsEmpty())
+	{
+		XBMC->Log(LOG_ERROR, "Unable to load EPG file '%s':  file is missing or empty. After %d tries.", m_strXMLTVUrl.c_str(), iCount);
+		m_bEGPLoaded = true;
 		return false;
 	}
 
@@ -89,6 +105,7 @@ bool PVRIptvData::LoadEPG(void)
 		if (!gzipInflate(strXML, data))
 		{
 			XBMC->Log(LOG_ERROR, "Invalid EPG file '%s': unable to decompress file.", m_strXMLTVUrl.c_str());
+			m_bEGPLoaded = true;
 			return false;
 		}
 		strXML = data;
@@ -99,6 +116,7 @@ bool PVRIptvData::LoadEPG(void)
 	if (xmlDoc.Error())
 	{
 		XBMC->Log(LOG_ERROR, "Unable parse EPG XML: %s at line %d", xmlDoc.ErrorDesc(), xmlDoc.ErrorRow());
+		m_bEGPLoaded = true;
 		return false;
 	}
 
@@ -106,6 +124,7 @@ bool PVRIptvData::LoadEPG(void)
     if (strcmp(pRootElement->Value(), "tv") != 0)
 	{
 		XBMC->Log(LOG_ERROR, "Invalid EPG XML: no <tv> tag found");
+		m_bEGPLoaded = true;
 		return false;
 	}
 
@@ -139,7 +158,7 @@ bool PVRIptvData::LoadEPG(void)
 
 	if (m_egpChannels.size() == 0) 
 	{
-		XBMC->Log(LOG_ERROR, "EPG channels not founded.");
+		XBMC->Log(LOG_ERROR, "EPG channels not found.");
 		return false;
 	}
 
@@ -218,6 +237,7 @@ bool PVRIptvData::LoadPlayList(void)
 	tmpChannel.strChannelName = "";
 	tmpChannel.strTvgName = "";
 	tmpChannel.strTvgLogo = "";
+	tmpChannel.iTvgShift = 0;
 
 	char szLine[1024];
 	while(stream.getline(szLine, 1024)) 
@@ -277,7 +297,7 @@ bool PVRIptvData::LoadPlayList(void)
 				strTvgName = ReadMarkerValue(strInfoLine, TVG_INFO_NAME_MARKER);
 				strTvgLogo = ReadMarkerValue(strInfoLine, TVG_INFO_LOGO_MARKER);
 				strGroupName = ReadMarkerValue(strInfoLine, GROUP_NAME_MARKER);
-				fTvgShift = atof(ReadMarkerValue(strInfoLine, TVG_INFO_SHIFT_MARKER)) * 60.0;
+				fTvgShift = atof(ReadMarkerValue(strInfoLine, TVG_INFO_SHIFT_MARKER));
 
 				if (iTvgId <= 0)
 				{
@@ -289,7 +309,7 @@ bool PVRIptvData::LoadPlayList(void)
 				}
 
 				tmpChannel.iTvgId = iTvgId;
-				tmpChannel.strTvgName = XBMC->UnknownToUTF8(strTvgName);
+				tmpChannel.strTvgName = strTvgName;
 				tmpChannel.strTvgLogo = strTvgLogo;
 				tmpChannel.iTvgShift = (int)(fTvgShift * 60.0);
 
@@ -301,7 +321,7 @@ bool PVRIptvData::LoadPlayList(void)
 				if (!strGroupName.IsEmpty())
 				{
 					PVRIptvChannelGroup group;
-					group.strGroupName = XBMC->UnknownToUTF8(strGroupName);
+					group.strGroupName = strGroupName;
 					group.iGroupId = ++iUniqueGroupId;
 					group.bRadio = false;
 
@@ -342,6 +362,7 @@ bool PVRIptvData::LoadPlayList(void)
 			tmpChannel.strChannelName = "";
 			tmpChannel.strTvgName = "";
 			tmpChannel.strTvgLogo = "";
+			tmpChannel.iTvgShift = 0;
 		}
 	}
   
@@ -495,7 +516,7 @@ PVR_ERROR PVRIptvData::GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &
 		{
 			PVRIptvEpgEntry &myTag = egpChannel->epg.at(iEntryPtr);
 
-			int iShift = g_bTSOverride ? m_iEPGTimeShift : myChannel.iTvgShift + m_iEPGTimeShift;
+			int iShift = m_bTSOverride ? m_iEPGTimeShift : myChannel.iTvgShift + m_iEPGTimeShift;
 
 			if (myTag.endTime + iShift < iStart) 
 				continue;
@@ -762,7 +783,7 @@ void PVRIptvData::ApplyChannelsLogos()
 	{
 		PVRIptvChannel &myChannel = m_channels.at(iChannelPtr);
 		myChannel.strLogoPath = PathCombine(m_strLogoPath.c_str(), myChannel.strTvgLogo.c_str());
-		myChannel.strLogoPath.append(".png");
+		myChannel.strLogoPath.append(CHANNEL_LOGO_EXTENSION);
 	}
 }
 
@@ -773,7 +794,7 @@ CStdString PVRIptvData::ReadMarkerValue(CStdString strLine, const char* strMarke
 	int iMarkerStart = (int) strLine.Find(strMarkerName);
 	if (iMarkerStart >= 0)
 	{
-		CStdString strMarker = strMarkerName;
+		std::string strMarker = strMarkerName;
 		iMarkerStart += strMarker.length();
 		char cFind = ' ';
 		if (strLine[iMarkerStart] == '"')

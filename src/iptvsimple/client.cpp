@@ -87,17 +87,16 @@ extern "C" {
 void ADDON_ReadSettings(void)
 {
 	char buffer[1024];
-	int iPathType;
-
+	int iPathType = 0;
 	if (!XBMC->GetSetting("m3uPathType", &iPathType)) 
 	{
-		iPathType = 30001;
+		iPathType = 1;
 	}
-	CStdString strSettingName = iPathType == 30001 ? "m3uPath" : "m3uUrl";
-	if (XBMC->GetSetting(strSettingName.c_str(), &buffer)) 
+	CStdString strSettingName = iPathType ? "m3uPath" : "m3uUrl";
+	if (XBMC->GetSetting(strSettingName, &buffer)) 
 	{
 		g_strM3UPath = buffer;
-	} 
+	}
 	if (g_strM3UPath == "") 
 	{
 		g_strM3UPath = GetClientFilePath(M3U_FILE_NAME);
@@ -105,10 +104,10 @@ void ADDON_ReadSettings(void)
 
 	if (!XBMC->GetSetting("epgPathType", &iPathType)) 
 	{
-		iPathType = 30001;
+		iPathType = 1;
 	}
-	strSettingName = iPathType == 30001 ? "epgPath" : "epgUrl";
-	if (XBMC->GetSetting(strSettingName.c_str(), &buffer)) 
+	strSettingName = iPathType ? "epgPath" : "epgUrl";
+	if (XBMC->GetSetting(strSettingName, &buffer)) 
 	{
 		g_strTvgPath = buffer;
 	}
@@ -125,7 +124,7 @@ void ADDON_ReadSettings(void)
 	{
 		g_bTSOverride = true;
 	}
-
+    
 	if (XBMC->GetSetting("logoPath", &buffer))
 	{
 		g_strLogoPath = buffer;
