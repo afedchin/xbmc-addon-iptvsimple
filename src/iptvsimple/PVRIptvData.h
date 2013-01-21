@@ -62,9 +62,11 @@ struct PVRIptvChannel
   std::string             strChannelName;
   std::string             strLogoPath;
   std::string             strStreamURL;
+
   int                     iTvgId;
   std::string             strTvgName;
   std::string             strTvgLogo;
+  int                     iTvgShift;
 };
 
 struct PVRIptvRecording
@@ -131,5 +133,5 @@ private:
   CStdString						m_strM3uUrl;
   CStdString						m_strLogoPath;
   int                               m_iEPGTimeShift;
-  bool                              m_bApplyTStoAll;
+  bool                              g_bTSOverride;
 };

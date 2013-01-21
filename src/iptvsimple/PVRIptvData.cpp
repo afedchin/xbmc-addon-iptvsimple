@@ -34,6 +34,7 @@
 #define TVG_INFO_ID_MARKER    "tvg-id="
 #define TVG_INFO_NAME_MARKER  "tvg-name="
 #define TVG_INFO_LOGO_MARKER  "tvg-logo="
+#define TVG_INFO_SHIFT_MARKER "tvg-shift="
 
 #define GROUP_NAME_MARKER     "group-title="
 
@@ -47,7 +48,7 @@ PVRIptvData::PVRIptvData(void)
   m_strDefaultIcon = GetClientFilePath("icon.png");
   m_strLogoPath    = g_strLogoPath;
   m_iEPGTimeShift  = g_iEPGTimeShift;
-  m_bApplyTStoAll  = g_bApplyTSToAll;
+  g_bTSOverride    = g_bTSOverride;
 
   m_bEGPLoaded = false;
 
@@ -210,6 +211,7 @@ bool PVRIptvData::LoadPlayList(void)
 	int iUniqueGroupId = 0;
 	int iChannelNum = 0;
 	bool isfirst = true;
+	int iEPGTimeShift = 0;
 
 	PVRIptvChannel tmpChannel;
 	tmpChannel.iTvgId = -1;
@@ -234,6 +236,8 @@ bool PVRIptvData::LoadPlayList(void)
 			}
 			if (strLine.Left((int)strlen(M3U_START_MARKER)) == M3U_START_MARKER) 
 			{
+				double fTvgShift = atof(ReadMarkerValue(strLine, TVG_INFO_SHIFT_MARKER));
+				iEPGTimeShift = (int) (fTvgShift * 60.0);
 				continue;
 			}
 			else
@@ -243,6 +247,7 @@ bool PVRIptvData::LoadPlayList(void)
 		}
 
 		int			iTvgId = -1;
+		double		fTvgShift = 0;
 		CStdString	strChnlName = "";
 		CStdString	strTvgId = "";
 		CStdString	strTvgName = "";
@@ -272,6 +277,7 @@ bool PVRIptvData::LoadPlayList(void)
 				strTvgName = ReadMarkerValue(strInfoLine, TVG_INFO_NAME_MARKER);
 				strTvgLogo = ReadMarkerValue(strInfoLine, TVG_INFO_LOGO_MARKER);
 				strGroupName = ReadMarkerValue(strInfoLine, GROUP_NAME_MARKER);
+				fTvgShift = atof(ReadMarkerValue(strInfoLine, TVG_INFO_SHIFT_MARKER)) * 60.0;
 
 				if (iTvgId <= 0)
 				{
@@ -285,6 +291,12 @@ bool PVRIptvData::LoadPlayList(void)
 				tmpChannel.iTvgId = iTvgId;
 				tmpChannel.strTvgName = XBMC->UnknownToUTF8(strTvgName);
 				tmpChannel.strTvgLogo = strTvgLogo;
+				tmpChannel.iTvgShift = (int)(fTvgShift * 60.0);
+
+				if (tmpChannel.iTvgShift == 0 && iEPGTimeShift != 0)
+				{
+					tmpChannel.iTvgShift = iEPGTimeShift;
+				}
 
 				if (!strGroupName.IsEmpty())
 				{
@@ -483,7 +495,9 @@ PVR_ERROR PVRIptvData::GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &
 		{
 			PVRIptvEpgEntry &myTag = egpChannel->epg.at(iEntryPtr);
 
-			if (myTag.endTime < iStart) 
+			int iShift = g_bTSOverride ? m_iEPGTimeShift : myChannel.iTvgShift + m_iEPGTimeShift;
+
+			if (myTag.endTime + iShift < iStart) 
 				continue;
 
 			EPG_TAG tag;
@@ -492,8 +506,8 @@ PVR_ERROR PVRIptvData::GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &
 			tag.iUniqueBroadcastId = myTag.iBroadcastId;
 			tag.strTitle           = myTag.strTitle.c_str();
 			tag.iChannelNumber     = myTag.iChannelId;
-			tag.startTime          = myTag.startTime;
-			tag.endTime            = myTag.endTime;
+			tag.startTime          = myTag.startTime + iShift;
+			tag.endTime            = myTag.endTime + iShift;
 			tag.strPlotOutline     = myTag.strPlotOutline.c_str();
 			tag.strPlot            = myTag.strPlot.c_str();
 			tag.strIconPath        = myTag.strIconPath.c_str();
@@ -502,7 +516,7 @@ PVR_ERROR PVRIptvData::GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &
 
 			PVR->TransferEpgEntry(handle, &tag);
 
-			if (myTag.startTime > iEnd)
+			if (myTag.startTime + iShift > iEnd)
 				break;
 		}
 

@@ -54,8 +54,8 @@ release-repo-daily: repo-daily
 
 repo-zip: all
 	cd addons && \
-	zip -9 -r ../repository.xvdr.linux32.zip repository.xvdr.linux32 --exclude \*.am \*.in \*Makefile \*.gitignore && \
-	zip -9 -r ../repository.xvdr.linux64.zip repository.xvdr.linux64 --exclude \*.am \*.in \*Makefile \*.gitignore && \
-	zip -9 -r ../repository.xvdr.rpi.zip repository.xvdr.rpi --exclude \*.am \*.in \*Makefile \*.gitignore && \
-	zip -9 -r ../repository.xvdr.osx.zip repository.xvdr.osx --exclude \*.am \*.in \*Makefile \*.gitignore && \
-	zip -9 -r ../repository.xvdr.win32.zip repository.xvdr.win32 --exclude \*.am \*.in \*Makefile \*.gitignore
+	zip -9 -r ../repository.iptvsimple.linux32.zip repository.iptvsimple.linux32 --exclude \*.am \*.in \*Makefile \*.gitignore && \
+	zip -9 -r ../repository.iptvsimple.linux64.zip repository.iptvsimple.linux64 --exclude \*.am \*.in \*Makefile \*.gitignore && \
+	zip -9 -r ../repository.iptvsimple.rpi.zip repository.iptvsimple.rpi --exclude \*.am \*.in \*Makefile \*.gitignore && \
+	zip -9 -r ../repository.iptvsimple.osx.zip repository.iptvsimple.osx --exclude \*.am \*.in \*Makefile \*.gitignore && \
+	zip -9 -r ../repository.iptvsimple.win32.zip repository.iptvsimple.win32 --exclude \*.am \*.in \*Makefile \*.gitignore

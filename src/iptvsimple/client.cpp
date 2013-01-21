@@ -53,7 +53,7 @@ std::string g_strTvgPath              = DEFAULT_TVG_PATH;
 std::string g_strM3UPath              = "";
 std::string g_strLogoPath             = "";
 int         g_iEPGTimeShift           = 0;
-bool        g_bApplyTSToAll           = true;
+bool        g_bTSOverride             = true;
 
 extern std::string PathCombine(const char* strPath, const char * strFileName)
 {
@@ -116,14 +116,14 @@ void ADDON_ReadSettings(void)
 	{
 		g_strTvgPath = DEFAULT_TVG_PATH;
 	}
-	float fTimeShift = 0.0;
-	if (XBMC->GetSetting("epgTimeShift", &fTimeShift))
+	double dTimeShift = 0.0;
+	if (XBMC->GetSetting("epgTimeShift", &dTimeShift))
 	{
-		g_iEPGTimeShift = (int)(fTimeShift * 60.0); // hours to seconds
+		g_iEPGTimeShift = (int)(dTimeShift * 60.0); // hours to seconds
 	}
-	if (!XBMC->GetSetting("epgTSToAll", &g_bApplyTSToAll))
+	if (!XBMC->GetSetting("epgTSOverride", &g_bTSOverride))
 	{
-		g_bApplyTSToAll = true;
+		g_bTSOverride = true;
 	}
 
 	if (XBMC->GetSetting("logoPath", &buffer))
