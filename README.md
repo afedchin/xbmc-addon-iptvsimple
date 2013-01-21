@@ -7,6 +7,7 @@ EPG TV Guide through IPTV provided by the Internet providers in exUSSR countries
 ------------------------------------------
 
 Written by: Anton Fedchin
+
 Based on: XBMC PVR Demo Add-on by Pulse-Eight (http://www.pulse-eight.com/)
 
 This program is free software; you can redistribute it and/or modify
