@@ -60,13 +60,11 @@ struct PVRIptvChannel
   int                     iChannelNumber;
   int                     iEncryptionSystem;
   std::string             strChannelName;
-  std::string             strIconPath;
+  std::string             strLogoPath;
   std::string             strStreamURL;
-
-  std::vector<PVRIptvEpgEntry> epg;
-
   int                     iTvgId;
   std::string             strTvgName;
+  std::string             strTvgLogo;
 };
 
 struct PVRIptvRecording
@@ -116,6 +114,8 @@ protected:
   virtual int ParseDateTime(CStdString strDate, bool iDateFormat = true);
   virtual bool gzipInflate( const std::string& compressedBytes, std::string& uncompressedBytes);
   virtual CStdString GetCachedFileContents(const char * strCachedName, const char * strFilePath);
+  virtual void ApplyChannelsLogos();
+  virtual CStdString ReadMarkerValue(CStdString strLine, const char * strMarkerName);
 
 protected:
   virtual void *Process(void);
@@ -129,4 +129,7 @@ private:
   CStdString						m_strDefaultIcon;
   CStdString						m_strXMLTVUrl;
   CStdString						m_strM3uUrl;
+  CStdString						m_strLogoPath;
+  int                               m_iEPGTimeShift;
+  bool                              m_bApplyTStoAll;
 };

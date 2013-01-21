@@ -51,8 +51,11 @@ CHelper_libXBMC_pvr   *PVR            = NULL;
 
 std::string g_strTvgPath              = DEFAULT_TVG_PATH;
 std::string g_strM3UPath              = "";
+std::string g_strLogoPath             = "";
+int         g_iEPGTimeShift           = 0;
+bool        g_bApplyTSToAll           = true;
 
-std::string PathCombine(const char* strPath, const char * strFileName)
+extern std::string PathCombine(const char* strPath, const char * strFileName)
 {
 	std::string strResult = strPath;
     if (strResult.at(strResult.size() - 1) == '\\' ||
@@ -84,24 +87,52 @@ extern "C" {
 void ADDON_ReadSettings(void)
 {
 	char buffer[1024];
-	if (XBMC->GetSetting("tvgPath", &buffer)) 
+	int iPathType;
+
+	if (!XBMC->GetSetting("m3uPathType", &iPathType)) 
+	{
+		iPathType = 30001;
+	}
+	CStdString strSettingName = iPathType == 30001 ? "m3uPath" : "m3uUrl";
+	if (XBMC->GetSetting(strSettingName.c_str(), &buffer)) 
+	{
+		g_strM3UPath = buffer;
+	} 
+	if (g_strM3UPath == "") 
+	{
+		g_strM3UPath = GetClientFilePath(M3U_FILE_NAME);
+	}
+
+	if (!XBMC->GetSetting("epgPathType", &iPathType)) 
+	{
+		iPathType = 30001;
+	}
+	strSettingName = iPathType == 30001 ? "epgPath" : "epgUrl";
+	if (XBMC->GetSetting(strSettingName.c_str(), &buffer)) 
 	{
 		g_strTvgPath = buffer;
 	}
-
 	if (g_strTvgPath == "") 
 	{
 		g_strTvgPath = DEFAULT_TVG_PATH;
 	}
-
-	if (XBMC->GetSetting("m3uPath", &buffer)) 
+	float fTimeShift = 0.0;
+	if (XBMC->GetSetting("epgTimeShift", &fTimeShift))
 	{
-		g_strM3UPath = buffer;
-	} 
-
-	if (g_strM3UPath == "") 
+		g_iEPGTimeShift = (int)(fTimeShift * 60.0); // hours to seconds
+	}
+	if (!XBMC->GetSetting("epgTSToAll", &g_bApplyTSToAll))
 	{
-		g_strM3UPath = GetClientFilePath(M3U_FILE_NAME);
+		g_bApplyTSToAll = true;
+	}
+
+	if (XBMC->GetSetting("logoPath", &buffer))
+	{
+		g_strLogoPath = buffer;
+	}
+	if (g_strLogoPath == "")
+	{
+		g_strLogoPath = GetClientFilePath("icons/");
 	}
 }
 

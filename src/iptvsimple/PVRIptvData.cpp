@@ -31,20 +31,24 @@
 #define M3U_INFO_MARKER       "#EXTINF"
 
 #define TVG_FILE_NAME         "xmltv.xml.gz"
-#define TVG_INFO_ID_MARKER    "tvg-id=\""
-#define TVG_INFO_NAME_MARKER  "tvg-name=\""
-#define TVG_INFO_LOGO_MARKER  "tvg-logo=\""
+#define TVG_INFO_ID_MARKER    "tvg-id="
+#define TVG_INFO_NAME_MARKER  "tvg-name="
+#define TVG_INFO_LOGO_MARKER  "tvg-logo="
 
-#define GROUP_NAME_MARKER     "group-title=\""
+#define GROUP_NAME_MARKER     "group-title="
 
 using namespace std;
 using namespace ADDON;
 
 PVRIptvData::PVRIptvData(void)
 {
-  m_strXMLTVUrl = g_strTvgPath;
-  m_strM3uUrl = g_strM3UPath;
+  m_strXMLTVUrl    = g_strTvgPath;
+  m_strM3uUrl      = g_strM3UPath;
   m_strDefaultIcon = GetClientFilePath("icon.png");
+  m_strLogoPath    = g_strLogoPath;
+  m_iEPGTimeShift  = g_iEPGTimeShift;
+  m_bApplyTStoAll  = g_bApplyTSToAll;
+
   m_bEGPLoaded = false;
 
   if (LoadPlayList() && m_channels.size() > 0)
@@ -211,7 +215,7 @@ bool PVRIptvData::LoadPlayList(void)
 	tmpChannel.iTvgId = -1;
 	tmpChannel.strChannelName = "";
 	tmpChannel.strTvgName = "";
-	tmpChannel.strIconPath = "";
+	tmpChannel.strTvgLogo = "";
 
 	char szLine[1024];
 	while(stream.getline(szLine, 1024)) 
@@ -257,90 +261,43 @@ bool PVRIptvData::LoadPlayList(void)
 				strChnlName = strLine.Right((int)strLine.size() - iComma);
 				if (strChnlName.IsEmpty()) 
 				{
-					strChnlName.Format("IPTV Channel %d", iChannelNum + 1);
+					strChnlName.Format("Channel %d", iChannelNum + 1);
 				}
 				tmpChannel.strChannelName = strChnlName;
 
 				// parse info
-				iColon++;
-				CStdString strInfoLine = strLine.Mid(iColon, iComma - iColon);
+				CStdString strInfoLine = strLine.Mid(++iColon, --iComma - iColon);
 
-				int iTvgIdPos = (int)strInfoLine.find(TVG_INFO_ID_MARKER);
-				int iTvgNamePos = (int)strInfoLine.find(TVG_INFO_NAME_MARKER);
-				int iTvgLogoPos = (int)strInfoLine.find(TVG_INFO_LOGO_MARKER);
-				int iGroupNamePos = (int)strInfoLine.find(GROUP_NAME_MARKER);
+				iTvgId = atoi(ReadMarkerValue(strInfoLine, TVG_INFO_ID_MARKER));
+				strTvgName = ReadMarkerValue(strInfoLine, TVG_INFO_NAME_MARKER);
+				strTvgLogo = ReadMarkerValue(strInfoLine, TVG_INFO_LOGO_MARKER);
+				strGroupName = ReadMarkerValue(strInfoLine, GROUP_NAME_MARKER);
 
-				if (iTvgIdPos >= 0) 
-				{
-					iTvgIdPos += sizeof(TVG_INFO_ID_MARKER) - 1;
-					int iTvgIdEndPos = (int)strInfoLine.Find('"', iTvgIdPos);
-					if (iTvgIdEndPos >= 0)
-					{
-						iTvgId = atoi(strInfoLine.Mid(iTvgIdPos, iTvgIdEndPos - iTvgIdPos).c_str());
-					}
-				}
-				else
+				if (iTvgId <= 0)
 				{
 					iTvgId = atoi(strInfoLine.c_str());
 				}
-				tmpChannel.iTvgId = iTvgId;
-
-				if (iTvgNamePos >= 0) 
-				{
-					iTvgNamePos += sizeof(TVG_INFO_NAME_MARKER) - 1;
-					int iTvgNameEndPos = (int)strInfoLine.Find('"', iTvgNamePos);
-					if (iTvgNameEndPos >= 0)
-					{
-						strTvgName = strInfoLine.Mid(iTvgNamePos, iTvgNameEndPos - iTvgNamePos);
-					}
-				}
-				tmpChannel.strTvgName = XBMC->UnknownToUTF8(strTvgName);
-
-				if (iTvgLogoPos >= 0) 
-				{
-					iTvgLogoPos += sizeof(TVG_INFO_LOGO_MARKER) - 1;
-					int iTvgLogoEndPos = (int)strInfoLine.Find('"', iTvgLogoPos);
-					if (iTvgLogoEndPos >= 0)
-					{
-						strTvgLogo = strInfoLine.Mid(iTvgLogoPos, iTvgLogoEndPos - iTvgLogoPos);
-						strTvgLogo = XBMC->UnknownToUTF8(strTvgLogo);
-
-						if (!strTvgLogo.IsEmpty()) 
-						{
-							strTvgLogo = GetClientFilePath("icons/" + strTvgLogo);
-							strTvgLogo.append(".png");
-						}
-					}
-				}
-
 				if (strTvgLogo.IsEmpty())
 				{
-					strTvgLogo = XBMC->UnknownToUTF8(strChnlName);
-					strTvgLogo = GetClientFilePath("icons/" + strTvgLogo);
-					strTvgLogo.append(".png");
+					strTvgLogo = strChnlName;
 				}
 
-				tmpChannel.strIconPath = strTvgLogo;
+				tmpChannel.iTvgId = iTvgId;
+				tmpChannel.strTvgName = XBMC->UnknownToUTF8(strTvgName);
+				tmpChannel.strTvgLogo = strTvgLogo;
 
-				if (iGroupNamePos >= 0) 
+				if (!strGroupName.IsEmpty())
 				{
-					iGroupNamePos += sizeof(GROUP_NAME_MARKER) - 1;
-					int iGroupNameEndPos = (int)strInfoLine.Find('"', iGroupNamePos);
-					if (iGroupNameEndPos >= 0)
-					{
-						strGroupName = strInfoLine.Mid(iGroupNamePos, iGroupNameEndPos - iGroupNamePos);
+					PVRIptvChannelGroup group;
+					group.strGroupName = XBMC->UnknownToUTF8(strGroupName);
+					group.iGroupId = ++iUniqueGroupId;
+					group.bRadio = false;
 
-						PVRIptvChannelGroup group;
-						group.strGroupName = XBMC->UnknownToUTF8(strGroupName);
-						group.iGroupId = ++iUniqueGroupId;
-						group.bRadio = false;
-
-						m_groups.push_back(group);
-					}
+					m_groups.push_back(group);
 				}
 			}
 		} 
-		else 
+		else if (strLine[0] != '#')
 		{
 			strChnlName = tmpChannel.strChannelName;
 			if (strChnlName.IsEmpty())
@@ -356,7 +313,7 @@ bool PVRIptvData::LoadPlayList(void)
 				channel.iTvgId			= tmpChannel.iTvgId;
 				channel.strChannelName	= tmpChannel.strChannelName;
 				channel.strTvgName		= tmpChannel.strTvgName;
-				channel.strIconPath		= tmpChannel.strIconPath;
+				channel.strTvgLogo		= tmpChannel.strTvgLogo;
 				channel.strStreamURL	= strLine;
 				channel.iEncryptionSystem = 0;
 				channel.bRadio = false;
@@ -372,7 +329,7 @@ bool PVRIptvData::LoadPlayList(void)
 			tmpChannel.iTvgId = -1;
 			tmpChannel.strChannelName = "";
 			tmpChannel.strTvgName = "";
-			tmpChannel.strIconPath = "";
+			tmpChannel.strTvgLogo = "";
 		}
 	}
   
@@ -383,6 +340,8 @@ bool PVRIptvData::LoadPlayList(void)
 		XBMC->Log(LOG_ERROR, "Unable to load channels from file '%s':  file is corrupted.", m_strM3uUrl.c_str());
 		return false;
 	}
+
+	ApplyChannelsLogos();
 
 	XBMC->Log(LOG_NOTICE, "Loaded %d channels.", m_channels.size());
 	return true;
@@ -409,7 +368,7 @@ PVR_ERROR PVRIptvData::GetChannels(ADDON_HANDLE handle, bool bRadio)
       strncpy(xbmcChannel.strChannelName, channel.strChannelName.c_str(), sizeof(xbmcChannel.strChannelName) - 1);
       strncpy(xbmcChannel.strStreamURL, channel.strStreamURL.c_str(), sizeof(xbmcChannel.strStreamURL) - 1);
       xbmcChannel.iEncryptionSystem = channel.iEncryptionSystem;
-      strncpy(xbmcChannel.strIconPath, channel.strIconPath.c_str(), sizeof(xbmcChannel.strIconPath) - 1);
+      strncpy(xbmcChannel.strIconPath, channel.strLogoPath.c_str(), sizeof(xbmcChannel.strIconPath) - 1);
       xbmcChannel.bIsHidden         = false;
 
       PVR->TransferChannelEntry(handle, &xbmcChannel);
@@ -431,7 +390,7 @@ bool PVRIptvData::GetChannel(const PVR_CHANNEL &channel, PVRIptvChannel &myChann
       myChannel.iChannelNumber    = thisChannel.iChannelNumber;
       myChannel.iEncryptionSystem = thisChannel.iEncryptionSystem;
       myChannel.strChannelName    = thisChannel.strChannelName;
-      myChannel.strIconPath       = thisChannel.strIconPath;
+      myChannel.strLogoPath       = thisChannel.strLogoPath;
       myChannel.strStreamURL      = thisChannel.strStreamURL;
 
       return true;
@@ -776,4 +735,45 @@ CStdString PVRIptvData::GetCachedFileContents(const char * strCachedName, const 
 	}
 
     return strResult;
+}
+
+void PVRIptvData::ApplyChannelsLogos()
+{
+	if (m_strLogoPath.IsEmpty())
+	{
+		return;
+	}
+
+	for(unsigned int iChannelPtr = 0, max = m_channels.size(); iChannelPtr < max; iChannelPtr++)
+	{
+		PVRIptvChannel &myChannel = m_channels.at(iChannelPtr);
+		myChannel.strLogoPath = PathCombine(m_strLogoPath.c_str(), myChannel.strTvgLogo.c_str());
+		myChannel.strLogoPath.append(".png");
+	}
+}
+
+CStdString PVRIptvData::ReadMarkerValue(CStdString strLine, const char* strMarkerName)
+{
+	CStdString strResult;
+
+	int iMarkerStart = (int) strLine.Find(strMarkerName);
+	if (iMarkerStart >= 0)
+	{
+		CStdString strMarker = strMarkerName;
+		iMarkerStart += strMarker.length();
+		char cFind = ' ';
+		if (strLine[iMarkerStart] == '"')
+		{
+			cFind = '"';
+			iMarkerStart++;
+		}
+		int iMarkerEnd = (int)strLine.Find(cFind, iMarkerStart);
+		if (iMarkerEnd < 0)
+		{
+			iMarkerEnd = strLine.length();
+		}
+		strResult = strLine.Mid(iMarkerStart, iMarkerEnd - iMarkerStart);
+	}
+
+	return strResult;
 }

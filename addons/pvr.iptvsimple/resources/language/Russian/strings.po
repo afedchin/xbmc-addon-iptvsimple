@@ -1,7 +1,7 @@
 # XBMC Media Center language file
 # Addon Name: PVR IP-TV Simple Client
 # Addon id: pvr.iptvsimple
-# Addon version: 0.0.1
+# Addon version: 0.0.3
 # Addon Provider: nightik
 msgid ""
 msgstr ""
@@ -18,10 +18,53 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 msgctxt "#30000"
-msgid "M3U Play List Path(URL)"
-msgstr "Путь к файлу M3U (URL)"
+msgid "File Location"
+msgstr "Расположение файла"
 
 msgctxt "#30001"
-msgid "TVG Path(URL)"
-msgstr "Путь к телепрограмме (URL)"
+msgid "Local Path (include Local Network)"
+msgstr "Локальный путь (в т.ч. Локальная Сеть)"
 
+msgctxt "#30002"
+msgid "Remote Path (Internet address)"
+msgstr "Удалённый путь (сеть Интернет)"
+
+msgctxt "#30010"
+msgid "Play List Settings"
+msgstr "Установки плейлиста"
+
+msgctxt "#30011"
+msgid "M3U Play List Path"
+msgstr "Путь к M3U"
+
+msgctxt "#30012"
+msgid "M3U Play List URL"
+msgstr "Ссылка на M3U"
+
+msgctxt "#30020"
+msgid "EPG Settings"
+msgstr "Установки EPG"
+
+msgctxt "#30021"
+msgid "XMLTV Path"
+msgstr "Путь к XMLTV"
+
+msgctxt "#30022"
+msgid "XMLTV URL"
+msgstr "Ссылка на XMLTV"
+
+msgctxt "#30023"
+msgid "Apply Time Shift To All Channels"
+msgstr "Применять сдвиг по времени для всех каналов"
+
+msgctxt "#30024"
+msgid "EPG Time Shift"
+msgstr "Сдвиг по времени для EPG"
+
+msgctxt "#30030"
+msgid "Channels Logos"
+msgstr "Логотипы каналов"
+
+msgctxt "#30031"
+msgid "Channels Logos Folder"
+msgstr "Папка с логотипами каналов"

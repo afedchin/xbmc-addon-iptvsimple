@@ -1,7 +1,7 @@
 # XBMC Media Center language file
 # Addon Name: PVR IP-TV Simple Client
 # Addon id: pvr.iptvsimple
-# Addon version: 0.0.1
+# Addon version: 0.0.3
 # Addon Provider: nightik
 msgid ""
 msgstr ""
@@ -20,10 +20,53 @@ msgstr ""
 #settings labels
 
 msgctxt "#30000"
-msgid "M3U Play List Path (URL)"
+msgid "File Location"
 msgstr ""
 
 msgctxt "#30001"
-msgid "TVG Path (URL)"
+msgid "Local Path (include Local Network)"
 msgstr ""
 
+msgctxt "#30002"
+msgid "Remote Path (Internet address)"
+msgstr ""
+
+msgctxt "#30010"
+msgid "Play List Settings"
+msgstr ""
+
+msgctxt "#30011"
+msgid "M3U Play List Path"
+msgstr ""
+
+msgctxt "#30012"
+msgid "M3U Play List URL"
+msgstr ""
+
+msgctxt "#30020"
+msgid "EPG Settings"
+msgstr ""
+
+msgctxt "#30021"
+msgid "XMLTV Path"
+msgstr ""
+
+msgctxt "#30022"
+msgid "XMLTV URL"
+msgstr ""
+
+msgctxt "#30023"
+msgid "Apply Time Shift To All Channels"
+msgstr ""
+
+msgctxt "#30024"
+msgid "EPG Time Shift"
+msgstr ""
+
+msgctxt "#30030"
+msgid "Channels Logos"
+msgstr ""
+
+msgctxt "#30031"
+msgid "Channels Logos Folder"
+msgstr ""

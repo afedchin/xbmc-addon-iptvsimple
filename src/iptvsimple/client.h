@@ -28,10 +28,12 @@ extern std::string                   g_strClientPath;
 extern ADDON::CHelper_libXBMC_addon *XBMC;
 extern CHelper_libXBMC_pvr          *PVR;
 
-extern std::string g_strTvgPath;
-extern std::string g_strM3UPath;
+extern std::string   g_strM3UPath;
+extern std::string   g_strTvgPath;
+extern std::string   g_strLogoPath;
+extern int           g_iEPGTimeShift;
+extern bool          g_bApplyTSToAll;
 
-
-std::string PathCombine(const char* strPath, const char * strFileName);
+extern std::string PathCombine(const char* strPath, const char * strFileName);
 extern std::string GetClientFilePath(const char * strFileName);
 extern std::string GetUserFilePath(const char * strFileName);
