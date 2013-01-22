@@ -116,10 +116,17 @@ void ADDON_ReadSettings(void)
 	{
 		g_strTvgPath = DEFAULT_TVG_PATH;
 	}
-	double dTimeShift = 0.0;
+    // BUG! xbmc does not return slider value 
+	/*float dTimeShift;
 	if (XBMC->GetSetting("epgTimeShift", &dTimeShift))
 	{
 		g_iEPGTimeShift = (int)(dTimeShift * 3600.0); // hours to seconds
+	}*/
+	int itmpShift;
+	if (XBMC->GetSetting("epgTimeShift_", &itmpShift))
+	{
+		itmpShift -= 12;
+		g_iEPGTimeShift = (int)(itmpShift * 3600.0); // hours to seconds
 	}
 	if (!XBMC->GetSetting("epgTSOverride", &g_bTSOverride))
 	{

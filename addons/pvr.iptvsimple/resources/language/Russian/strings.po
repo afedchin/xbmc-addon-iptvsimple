@@ -58,8 +58,8 @@ msgid "Apply Time Shift To All Channels"
 msgstr "Применять сдвиг по времени для всех каналов"
 
 msgctxt "#30024"
-msgid "EPG Time Shift"
-msgstr "Сдвиг по времени для EPG"
+msgid "EPG Time Shift (hours)"
+msgstr "Сдвиг по времени для EPG (часов)"
 
 msgctxt "#30030"
 msgid "Channels Logos"

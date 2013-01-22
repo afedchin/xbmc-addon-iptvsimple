@@ -244,10 +244,16 @@ bool PVRIptvData::LoadPlayList(void)
 	char szLine[1024];
 	while(stream.getline(szLine, 1024)) 
 	{
+	
 		CStdString strLine = "";
 		strLine.append(szLine);
 		strLine.TrimRight(" \t\r\n");
 		strLine.TrimLeft(" \t");
+
+		if (strLine.IsEmpty())
+		{
+			continue;
+		}
 
 		if (isfirst) 
 		{
@@ -286,11 +292,7 @@ bool PVRIptvData::LoadPlayList(void)
 				// parse name
 				iComma++;
 				strChnlName = strLine.Right((int)strLine.size() - iComma);
-				if (strChnlName.IsEmpty()) 
-				{
-					strChnlName.Format("Channel %d", iChannelNum + 1);
-				}
-				tmpChannel.strChannelName = strChnlName;
+				tmpChannel.strChannelName = XBMC->UnknownToUTF8(strChnlName);
 
 				// parse info
 				CStdString strInfoLine = strLine.Mid(++iColon, --iComma - iColon);
@@ -311,8 +313,8 @@ bool PVRIptvData::LoadPlayList(void)
 				}
 
 				tmpChannel.iTvgId = iTvgId;
-				tmpChannel.strTvgName = strTvgName;
-				tmpChannel.strTvgLogo = strTvgLogo;
+				tmpChannel.strTvgName = XBMC->UnknownToUTF8(strTvgName);
+				tmpChannel.strTvgLogo = XBMC->UnknownToUTF8(strTvgLogo);
 				tmpChannel.iTvgShift = (int)(fTvgShift * 3600.0);
 
 				if (tmpChannel.iTvgShift == 0 && iEPGTimeShift != 0)
@@ -323,7 +325,7 @@ bool PVRIptvData::LoadPlayList(void)
 				if (!strGroupName.IsEmpty())
 				{
 					PVRIptvChannelGroup group;
-					group.strGroupName = strGroupName;
+					group.strGroupName = XBMC->UnknownToUTF8(strGroupName);
 					group.iGroupId = ++iUniqueGroupId;
 					group.bRadio = false;
 
@@ -333,32 +335,23 @@ bool PVRIptvData::LoadPlayList(void)
 		} 
 		else if (strLine[0] != '#')
 		{
-			strChnlName = tmpChannel.strChannelName;
-			if (strChnlName.IsEmpty())
+			PVRIptvChannel channel;
+			channel.iUniqueId		= ++iUniqueChannelId;
+			channel.iChannelNumber	= ++iChannelNum;
+			channel.iTvgId			= tmpChannel.iTvgId;
+			channel.strChannelName	= tmpChannel.strChannelName;
+			channel.strTvgName		= tmpChannel.strTvgName;
+			channel.strTvgLogo		= tmpChannel.strTvgLogo;
+			channel.iTvgShift		= tmpChannel.iTvgShift;
+			channel.strStreamURL	= strLine;
+			channel.iEncryptionSystem = 0;
+			channel.bRadio = false;
+
+			m_channels.push_back(channel);
+
+			if (iUniqueGroupId > 0) 
 			{
-				strChnlName = strLine;
-			}
-
-			if (!strChnlName.IsEmpty() && !strLine.IsEmpty())
-			{
-				PVRIptvChannel channel;
-				channel.iUniqueId		= ++iUniqueChannelId;
-				channel.iChannelNumber	= ++iChannelNum;
-				channel.iTvgId			= tmpChannel.iTvgId;
-				channel.strChannelName	= tmpChannel.strChannelName;
-				channel.strTvgName		= tmpChannel.strTvgName;
-				channel.strTvgLogo		= tmpChannel.strTvgLogo;
-				channel.iTvgShift		= tmpChannel.iTvgShift;
-				channel.strStreamURL	= strLine;
-				channel.iEncryptionSystem = 0;
-				channel.bRadio = false;
-
-				m_channels.push_back(channel);
-
-				if (iUniqueGroupId > 0) 
-				{
-					m_groups.at(iUniqueGroupId - 1).members.push_back(channel.iChannelNumber);
-				}
+				m_groups.at(iUniqueGroupId - 1).members.push_back(channel.iChannelNumber);
 			}
 
 			tmpChannel.iTvgId = -1;

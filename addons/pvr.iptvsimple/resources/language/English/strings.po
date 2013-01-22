@@ -60,7 +60,7 @@ msgid "Apply Time Shift To All Channels"
 msgstr ""
 
 msgctxt "#30024"
-msgid "EPG Time Shift"
+msgid "EPG Time Shift (hours)"
 msgstr ""
 
 msgctxt "#30030"
