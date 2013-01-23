@@ -80,6 +80,6 @@ addons/Makefile
 addons/pvr.iptvsimple/Makefile
 addons/pvr.iptvsimple/addon.xml
 src/Makefile
-src/tinyxml/Makefile
+src/rapidxml/Makefile
 src/iptvsimple/Makefile
 ])
