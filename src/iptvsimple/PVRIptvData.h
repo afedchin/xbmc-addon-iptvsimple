@@ -31,15 +31,16 @@
 struct PVRIptvEpgEntry
 {
   int         iBroadcastId;
-  std::string strTitle;
   int         iChannelId;
+  int         iGenreType;
+  int         iGenreSubType;
   time_t      startTime;
   time_t      endTime;
+  std::string strTitle;
   std::string strPlotOutline;
   std::string strPlot;
   std::string strIconPath;
-  int         iGenreType;
-  int         iGenreSubType;
+  std::string strGenreString;
 //  time_t      firstAired;
 //  int         iParentalRating;
 //  int         iStarRating;
@@ -63,14 +64,13 @@ struct PVRIptvChannel
   int                     iUniqueId;
   int                     iChannelNumber;
   int                     iEncryptionSystem;
+  int                     iTvgId;
+  int                     iTvgShift;
   std::string             strChannelName;
   std::string             strLogoPath;
   std::string             strStreamURL;
-
-  int                     iTvgId;
   std::string             strTvgName;
   std::string             strTvgLogo;
-  int                     iTvgShift;
 };
 
 struct PVRIptvRecording
@@ -78,13 +78,13 @@ struct PVRIptvRecording
   int         iDuration;
   int         iGenreType;
   int         iGenreSubType;
+  time_t      recordingTime;
   std::string strChannelName;
   std::string strPlotOutline;
   std::string strPlot;
   std::string strRecordingId;
   std::string strStreamURL;
   std::string strTitle;
-  time_t      recordingTime;
 };
 
 struct PVRIptvChannelGroup
@@ -101,31 +101,31 @@ public:
   PVRIptvData(void);
   virtual ~PVRIptvData(void);
 
-  virtual int GetChannelsAmount(void);
-  virtual PVR_ERROR GetChannels(ADDON_HANDLE handle, bool bRadio);
-  virtual bool GetChannel(const PVR_CHANNEL &channel, PVRIptvChannel &myChannel);
-  virtual int GetChannelGroupsAmount(void);
-  virtual PVR_ERROR GetChannelGroups(ADDON_HANDLE handle, bool bRadio);
-  virtual PVR_ERROR GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP &group);
-  virtual PVR_ERROR GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &channel, time_t iStart, time_t iEnd);
-  virtual int GetRecordingsAmount(void);
-  virtual PVR_ERROR GetRecordings(ADDON_HANDLE handle);
+  virtual int 			GetChannelsAmount(void);
+  virtual PVR_ERROR 	GetChannels(ADDON_HANDLE handle, bool bRadio);
+  virtual bool 			GetChannel(const PVR_CHANNEL &channel, PVRIptvChannel &myChannel);
+  virtual int 			GetChannelGroupsAmount(void);
+  virtual PVR_ERROR 	GetChannelGroups(ADDON_HANDLE handle, bool bRadio);
+  virtual PVR_ERROR 	GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP &group);
+  virtual PVR_ERROR 	GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &channel, time_t iStart, time_t iEnd);
+  virtual int 			GetRecordingsAmount(void);
+  virtual PVR_ERROR 	GetRecordings(ADDON_HANDLE handle);
 
-  virtual void ReaplyChannelsLogos(const char * strNewPath);
-  virtual void ReloadPlayList(const char * strNewPath);
-  virtual void ReloadEPG(const char * strNewPath);
+  virtual void 			ReaplyChannelsLogos(const char * strNewPath);
+  virtual void 			ReloadPlayList(const char * strNewPath);
+  virtual void 			ReloadEPG(const char * strNewPath);
 
 protected:
-  virtual bool LoadPlayList(void);
-  virtual bool LoadEPG(void);
-  virtual CStdString GetFileContents(CStdString& url);
-  virtual PVRIptvEpgChannel * FindEgpChannelById(int iId);
-  virtual PVRIptvEpgChannel * FindEgpChannelByPvrChannel(PVRIptvChannel &pvrChannel);
-  virtual int ParseDateTime(CStdString strDate, bool iDateFormat = true);
-  virtual bool gzipInflate( const std::string& compressedBytes, std::string& uncompressedBytes);
-  virtual CStdString GetCachedFileContents(const char * strCachedName, const char * strFilePath);
-  virtual void ApplyChannelsLogos();
-  virtual CStdString ReadMarkerValue(CStdString strLine, const char * strMarkerName);
+  virtual bool 					LoadPlayList(void);
+  virtual bool 					LoadEPG(void);
+  virtual int 					GetFileContents(CStdString& url, std::string &strContent);
+  virtual PVRIptvEpgChannel * 	FindEgpChannelById(int iId);
+  virtual PVRIptvEpgChannel * 	FindEgpChannelByPvrChannel(PVRIptvChannel &pvrChannel);
+  virtual int 					ParseDateTime(CStdString strDate, bool iDateFormat = true);
+  virtual bool 					gzipInflate( const std::string& compressedBytes, std::string& uncompressedBytes);
+  virtual int 					GetCachedFileContents(const std::string &strCachedName, const std::string &strFilePath, std::string &strContent);
+  virtual void 					ApplyChannelsLogos();
+  virtual CStdString 			ReadMarkerValue(std::string &strLine, const char * strMarkerName);
 
 protected:
   virtual void *Process(void);

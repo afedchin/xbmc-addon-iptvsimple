@@ -30,6 +30,12 @@
 #define TVG_FILE_NAME          "xmltv.xml.gz"
 #define DEFAULT_TVG_PATH       "http://www.teleguide.info/download/new3/xmltv.xml.gz"
 
+/*!
+ * @brief PVR macros for string exchange
+ */
+#define PVR_STRCPY(dest, source) do { strncpy(dest, source, sizeof(dest)-1); dest[sizeof(dest)-1] = '\0'; } while(0)
+#define PVR_STRCLR(dest) memset(dest, 0, sizeof(dest))
+
 extern bool                          m_bCreated;
 extern std::string                   g_strUserPath;
 extern std::string                   g_strClientPath;
@@ -42,6 +48,6 @@ extern std::string   g_strLogoPath;
 extern int           g_iEPGTimeShift;
 extern bool          g_bTSOverride;
 
-extern std::string PathCombine(const char* strPath, const char * strFileName);
-extern std::string GetClientFilePath(const char * strFileName);
-extern std::string GetUserFilePath(const char * strFileName);
+extern std::string PathCombine(const std::string &strPath, const std::string &strFileName);
+extern std::string GetClientFilePath(const std::string &strFileName);
+extern std::string GetUserFilePath(const std::string &strFileName);

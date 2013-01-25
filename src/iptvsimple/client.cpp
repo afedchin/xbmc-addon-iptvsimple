@@ -56,7 +56,7 @@ std::string g_strLogoPath             = "";
 int         g_iEPGTimeShift           = 0;
 bool        g_bTSOverride             = true;
 
-extern std::string PathCombine(const char* strPath, const char * strFileName)
+extern std::string PathCombine(const std::string &strPath, const std::string &strFileName)
 {
 	std::string strResult = strPath;
     if (strResult.at(strResult.size() - 1) == '\\' ||
@@ -73,14 +73,14 @@ extern std::string PathCombine(const char* strPath, const char * strFileName)
 	return strResult;
 }
 
-extern std::string GetClientFilePath(const char * strFileName)
+extern std::string GetClientFilePath(const std::string &strFileName)
 {
-	return PathCombine(g_strClientPath.c_str(), strFileName);
+	return PathCombine(g_strClientPath, strFileName);
 }
 
-extern std::string GetUserFilePath(const char * strFileName)
+extern std::string GetUserFilePath(const std::string &strFileName)
 {
-	return PathCombine(g_strUserPath.c_str(), strFileName);
+	return PathCombine(g_strUserPath, strFileName);
 }
 
 extern "C" {
