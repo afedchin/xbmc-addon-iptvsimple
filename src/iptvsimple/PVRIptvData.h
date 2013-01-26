@@ -51,26 +51,20 @@ struct PVRIptvEpgEntry
 //  std::string strEpisodeName;
 };
 
-struct PVRIptvEpgChannel
-{
-  int         iId;
-  std::string strName;
-  std::vector<PVRIptvEpgEntry> epg;
-};
-
 struct PVRIptvChannel
 {
-  bool                    bRadio;
-  int                     iUniqueId;
-  int                     iChannelNumber;
-  int                     iEncryptionSystem;
-  int                     iTvgId;
-  int                     iTvgShift;
-  std::string             strChannelName;
-  std::string             strLogoPath;
-  std::string             strStreamURL;
-  std::string             strTvgName;
-  std::string             strTvgLogo;
+  bool                          bRadio;
+  int                           iUniqueId;
+  int                           iChannelNumber;
+  int                           iEncryptionSystem;
+  int                           iTvgShift;
+  std::string                   strChannelName;
+  std::string                   strLogoPath;
+  std::string                   strStreamURL;
+  std::string                   strTvgId;
+  std::string                   strTvgName;
+  std::string                   strTvgLogo;
+  std::vector<PVRIptvEpgEntry>  epg;
 };
 
 struct PVRIptvRecording
@@ -119,10 +113,9 @@ protected:
   virtual bool 					LoadPlayList(void);
   virtual bool 					LoadEPG(void);
   virtual int 					GetFileContents(CStdString& url, std::string &strContent);
-  virtual PVRIptvEpgChannel * 	FindEgpChannelById(int iId);
-  virtual PVRIptvEpgChannel * 	FindEgpChannelByPvrChannel(PVRIptvChannel &pvrChannel);
+  virtual PVRIptvChannel *      FindChannel(const std::string &strId, const std::string &strName);
   virtual int 					ParseDateTime(CStdString strDate, bool iDateFormat = true);
-  virtual bool 					gzipInflate( const std::string& compressedBytes, std::string& uncompressedBytes);
+  virtual bool 					gzipInflate( const std::string &compressedBytes, std::string &uncompressedBytes);
   virtual int 					GetCachedFileContents(const std::string &strCachedName, const std::string &strFilePath, std::string &strContent);
   virtual void 					ApplyChannelsLogos();
   virtual CStdString 			ReadMarkerValue(std::string &strLine, const char * strMarkerName);
@@ -131,7 +124,6 @@ protected:
   virtual void *Process(void);
 
 private:
-  std::vector<PVRIptvEpgChannel>	m_egpChannels;
   std::vector<PVRIptvChannelGroup>	m_groups;
   std::vector<PVRIptvChannel>		m_channels;
   std::vector<PVRIptvRecording>		m_recordings;
