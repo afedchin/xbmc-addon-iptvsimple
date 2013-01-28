@@ -51,6 +51,13 @@ struct PVRIptvEpgEntry
 //  std::string strEpisodeName;
 };
 
+struct PVRIptvEpgChannel
+{
+  std::string                  strId;
+  std::string                  strName;
+  std::vector<PVRIptvEpgEntry> epg;
+};
+
 struct PVRIptvChannel
 {
   bool                          bRadio;
@@ -64,7 +71,6 @@ struct PVRIptvChannel
   std::string                   strTvgId;
   std::string                   strTvgName;
   std::string                   strTvgLogo;
-  std::vector<PVRIptvEpgEntry>  epg;
 };
 
 struct PVRIptvRecording
@@ -114,6 +120,8 @@ protected:
   virtual bool 					LoadEPG(void);
   virtual int 					GetFileContents(CStdString& url, std::string &strContent);
   virtual PVRIptvChannel *      FindChannel(const std::string &strId, const std::string &strName);
+  virtual PVRIptvEpgChannel *   FindEpg(const std::string &strId);
+  virtual PVRIptvEpgChannel *   FindEpgForChannel(PVRIptvChannel &channel);
   virtual int 					ParseDateTime(CStdString strDate, bool iDateFormat = true);
   virtual bool 					gzipInflate( const std::string &compressedBytes, std::string &uncompressedBytes);
   virtual int 					GetCachedFileContents(const std::string &strCachedName, const std::string &strFilePath, std::string &strContent);
@@ -126,6 +134,7 @@ protected:
 private:
   std::vector<PVRIptvChannelGroup>	m_groups;
   std::vector<PVRIptvChannel>		m_channels;
+  std::vector<PVRIptvEpgChannel>	m_epg;
   std::vector<PVRIptvRecording>		m_recordings;
   bool								m_bEGPLoaded;
   CStdString						m_strXMLTVUrl;
