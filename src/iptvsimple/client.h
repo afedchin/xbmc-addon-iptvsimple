@@ -26,6 +26,7 @@
 #include "libXBMC_addon.h"
 #include "libXBMC_pvr.h"
 
+#define PVR_CLIENT_VERSION     "0.1.0"
 #define M3U_FILE_NAME          "iptv.m3u"
 #define TVG_FILE_NAME          "xmltv.xml.gz"
 #define DEFAULT_TVG_PATH       "http://www.teleguide.info/download/new3/xmltv.xml.gz"

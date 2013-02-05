@@ -41,6 +41,7 @@
 #define TVG_INFO_SHIFT_MARKER  "tvg-shift="
 
 #define GROUP_NAME_MARKER      "group-title="
+#define SECONDS_IN_DAY		   5184000
 
 using namespace std;
 using namespace ADDON;
@@ -77,6 +78,8 @@ PVRIptvData::PVRIptvData(void)
   m_strLogoPath    = g_strLogoPath;
   m_iEPGTimeShift  = g_iEPGTimeShift;
   m_bTSOverride    = g_bTSOverride;
+  m_iLastStart     = 0;
+  m_iLastEnd       = 0;
 
   m_bEGPLoaded = false;
 
@@ -88,7 +91,7 @@ PVRIptvData::PVRIptvData(void)
 
 void *PVRIptvData::Process(void)
 {
-	LoadEPG();
+	LoadEPG(m_iLastStart, m_iLastEnd);
 	return NULL;
 }
 
@@ -99,12 +102,10 @@ PVRIptvData::~PVRIptvData(void)
   m_epg.clear();
 }
 
-bool PVRIptvData::LoadEPG(void) 
+bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd) 
 {
-	XBMC->QueueNotification(QUEUE_INFO, "Start EPG loading.");
-
 	std::string data;
-	std::string dataDcmp;
+	std::string decompressed;
 	int iReaded = 0;
 
 	int iCount = 0;
@@ -128,16 +129,22 @@ bool PVRIptvData::LoadEPG(void)
 		return false;
 	}
 
-	char * buffer = &(data[0]);
-	if (data[0] == '\x1F' && data[1] == '\x8B' && data[2] == '\x08' /*.substr(0, 3) == "\x1F\x8B\x08"*/) 
+	char * buffer;
+	if (data[0] == '\x1F' && 
+		data[1] == '\x8B' && 
+		data[2] == '\x08') 
 	{
-		if (!gzipInflate(data, dataDcmp))
+		if (!gzipInflate(data, decompressed))
 		{
 			XBMC->Log(LOG_ERROR, "Invalid EPG file '%s': unable to decompress file.", m_strXMLTVUrl.c_str());
 			m_bEGPLoaded = true;
 			return false;
 		}
-		buffer = &(dataDcmp[0]);
+		buffer = &(decompressed[0]);
+	}
+	else
+	{
+		buffer = &(data[0]);
 	}
 
 	xml_document<> xmlDoc;
@@ -158,6 +165,12 @@ bool PVRIptvData::LoadEPG(void)
 		XBMC->Log(LOG_ERROR, "Invalid EPG XML: no <tv> tag found");
 		m_bEGPLoaded = true;
 		return false;
+	}
+
+	// clear previously loaded epg
+	if (m_epg.size() > 0) 
+	{
+		m_epg.clear();
 	}
 
 	bool bFounded = false;
@@ -191,22 +204,35 @@ bool PVRIptvData::LoadEPG(void)
 		return false;
 	}
 	
+	int iMinShiftTime = m_iEPGTimeShift;
+	int iMaxShiftTime = m_iEPGTimeShift;
+	if (!m_bTSOverride)
+	{
+		iMinShiftTime = SECONDS_IN_DAY;
+		iMaxShiftTime = -SECONDS_IN_DAY;
+
+		vector<PVRIptvChannel>::iterator it;
+		for (it = m_channels.begin(); it < m_channels.end(); it++)
+		{
+			if (it->iTvgShift + m_iEPGTimeShift < iMinShiftTime)
+				iMinShiftTime = it->iTvgShift + m_iEPGTimeShift;
+			if (it->iTvgShift + m_iEPGTimeShift > iMaxShiftTime)
+				iMaxShiftTime = it->iTvgShift + m_iEPGTimeShift;
+		}
+	}
+
 	CStdString strEmpty = "";
 	PVRIptvEpgChannel *epg = NULL;
 	for(pChannelNode = pRootElement->first_node("programme"); pChannelNode; pChannelNode = pChannelNode->next_sibling("programme"))
 	{
 		CStdString strId;
 		if (!GetAttributeValue(pChannelNode, "channel", strId))
-		{
 			continue;
-		}
 
 		if (epg == NULL || epg->strId != strId) 
 		{
 			if ((epg = FindEpg(strId)) == NULL) 
-			{
 				continue;
-			}
 		}
 
 		CStdString strStart;
@@ -218,12 +244,19 @@ bool PVRIptvData::LoadEPG(void)
 			continue;
 		}
 
+		int iTmpStart = ParseDateTime(strStart);
+		int iTmpEnd = ParseDateTime(strStop);
+
+		if ((iTmpEnd < iStart + iMinShiftTime) ||
+			(iTmpStart > iEnd + iMaxShiftTime))
+		{
+			continue;
+		}
+
 		CStdString strTitle;
 		CStdString strCategory;
 		CStdString strDesc;
 
-		int iTmpStart = ParseDateTime(strStart);
-		int iTmpEnd = ParseDateTime(strStop);
 		GetNodeValue(pChannelNode, "title", strTitle);
 		GetNodeValue(pChannelNode, "category", strCategory);
 		GetNodeValue(pChannelNode, "desc", strDesc);
@@ -246,7 +279,6 @@ bool PVRIptvData::LoadEPG(void)
 	m_bEGPLoaded = true;
 
 	XBMC->Log(LOG_NOTICE, "EPG Loaded.");
-	XBMC->QueueNotification(QUEUE_INFO, "Loading EPG complete.");
 
 	return true;
 }
@@ -528,9 +560,14 @@ PVR_ERROR PVRIptvData::GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &
 			continue;
 		}
 
-		if (!m_bEGPLoaded) 
+		if (!m_bEGPLoaded || 
+			iStart > m_iLastStart || iEnd > m_iLastEnd) 
 		{
-			LoadEPG();
+			if (LoadEPG(iStart, iEnd))
+			{
+				m_iLastStart = iStart;
+				m_iLastEnd = iEnd;
+			}
 		}
 
 		PVRIptvEpgChannel *epg;
@@ -540,11 +577,11 @@ PVR_ERROR PVRIptvData::GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &
 			return PVR_ERROR_NO_ERROR;
 		}
 
+		int iShift = m_bTSOverride ? m_iEPGTimeShift : myChannel->iTvgShift + m_iEPGTimeShift;
+
 		vector<PVRIptvEpgEntry>::iterator myTag;
 		for (myTag = epg->epg.begin(); myTag < epg->epg.end(); myTag++)
 		{
-			int iShift = m_bTSOverride ? m_iEPGTimeShift : myChannel->iTvgShift + m_iEPGTimeShift;
-
 			if ((myTag->endTime + iShift) < iStart) 
 				continue;
 
@@ -573,37 +610,6 @@ PVR_ERROR PVRIptvData::GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &
 	}
 
 	return PVR_ERROR_NO_ERROR;
-}
-
-int PVRIptvData::GetRecordingsAmount(void)
-{
-  return m_recordings.size();
-}
-
-PVR_ERROR PVRIptvData::GetRecordings(ADDON_HANDLE handle)
-{
-  for (std::vector<PVRIptvRecording>::iterator it = m_recordings.begin() ; it != m_recordings.end() ; it++)
-  {
-    PVRIptvRecording &recording = *it;
-
-    PVR_RECORDING xbmcRecording;
-
-    xbmcRecording.iDuration     = recording.iDuration;
-    xbmcRecording.iGenreType    = recording.iGenreType;
-    xbmcRecording.iGenreSubType = recording.iGenreSubType;
-    xbmcRecording.recordingTime = recording.recordingTime;
-
-    strncpy(xbmcRecording.strChannelName, recording.strChannelName.c_str(), sizeof(xbmcRecording.strChannelName) - 1);
-    strncpy(xbmcRecording.strPlotOutline, recording.strPlotOutline.c_str(), sizeof(xbmcRecording.strPlotOutline) - 1);
-    strncpy(xbmcRecording.strPlot,        recording.strPlot.c_str(),        sizeof(xbmcRecording.strPlot) - 1);
-    strncpy(xbmcRecording.strRecordingId, recording.strRecordingId.c_str(), sizeof(xbmcRecording.strRecordingId) - 1);
-    strncpy(xbmcRecording.strTitle,       recording.strTitle.c_str(),       sizeof(xbmcRecording.strTitle) - 1);
-    strncpy(xbmcRecording.strStreamURL,   recording.strStreamURL.c_str(),   sizeof(xbmcRecording.strStreamURL) - 1);
-
-    PVR->TransferRecordingEntry(handle, &xbmcRecording);
-  }
-
-  return PVR_ERROR_NO_ERROR;
 }
 
 int PVRIptvData::GetFileContents(CStdString& url, std::string &strContent)
@@ -856,7 +862,7 @@ void PVRIptvData::ReloadEPG(const char * strNewPath)
 		m_bEGPLoaded = false;
 		// TODO clear epg for all channels
 
-		if (LoadEPG())
+		if (LoadEPG(m_iLastStart, m_iLastEnd))
 		{
 			for(unsigned int iChannelPtr = 0, max = m_channels.size(); iChannelPtr < max; iChannelPtr++)
 			{

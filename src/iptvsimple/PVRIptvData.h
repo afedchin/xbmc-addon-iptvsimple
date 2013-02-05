@@ -73,20 +73,6 @@ struct PVRIptvChannel
   std::string                   strTvgLogo;
 };
 
-struct PVRIptvRecording
-{
-  int         iDuration;
-  int         iGenreType;
-  int         iGenreSubType;
-  time_t      recordingTime;
-  std::string strChannelName;
-  std::string strPlotOutline;
-  std::string strPlot;
-  std::string strRecordingId;
-  std::string strStreamURL;
-  std::string strTitle;
-};
-
 struct PVRIptvChannelGroup
 {
   bool             bRadio;
@@ -108,8 +94,6 @@ public:
   virtual PVR_ERROR 	GetChannelGroups(ADDON_HANDLE handle, bool bRadio);
   virtual PVR_ERROR 	GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP &group);
   virtual PVR_ERROR 	GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &channel, time_t iStart, time_t iEnd);
-  virtual int 			GetRecordingsAmount(void);
-  virtual PVR_ERROR 	GetRecordings(ADDON_HANDLE handle);
 
   virtual void 			ReaplyChannelsLogos(const char * strNewPath);
   virtual void 			ReloadPlayList(const char * strNewPath);
@@ -117,7 +101,7 @@ public:
 
 protected:
   virtual bool 					LoadPlayList(void);
-  virtual bool 					LoadEPG(void);
+  virtual bool 					LoadEPG(time_t iStart, time_t iEnd);
   virtual int 					GetFileContents(CStdString& url, std::string &strContent);
   virtual PVRIptvChannel *      FindChannel(const std::string &strId, const std::string &strName);
   virtual PVRIptvEpgChannel *   FindEpg(const std::string &strId);
@@ -132,14 +116,15 @@ protected:
   virtual void *Process(void);
 
 private:
-  std::vector<PVRIptvChannelGroup>	m_groups;
-  std::vector<PVRIptvChannel>		m_channels;
-  std::vector<PVRIptvEpgChannel>	m_epg;
-  std::vector<PVRIptvRecording>		m_recordings;
+  bool                              m_bTSOverride;
   bool								m_bEGPLoaded;
+  int                               m_iEPGTimeShift;
+  int                               m_iLastStart;
+  int                               m_iLastEnd;
   CStdString						m_strXMLTVUrl;
   CStdString						m_strM3uUrl;
   CStdString						m_strLogoPath;
-  int                               m_iEPGTimeShift;
-  bool                              m_bTSOverride;
+  std::vector<PVRIptvChannelGroup>	m_groups;
+  std::vector<PVRIptvChannel>		m_channels;
+  std::vector<PVRIptvEpgChannel>	m_epg;
 };

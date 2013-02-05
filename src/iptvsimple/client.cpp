@@ -354,7 +354,7 @@ const char *GetBackendName(void)
 
 const char *GetBackendVersion(void)
 {
-  static CStdString strBackendVersion = "0.0.2";
+  static CStdString strBackendVersion = PVR_CLIENT_VERSION;
   return strBackendVersion.c_str();
 }
 
@@ -366,7 +366,7 @@ const char *GetConnectionString(void)
 
 PVR_ERROR GetDriveSpace(long long *iTotal, long long *iUsed)
 {
-  *iTotal = 1024 * 1024 * 1024;
+  *iTotal = 0;
   *iUsed  = 0;
   return PVR_ERROR_NO_ERROR;
 }
@@ -465,33 +465,11 @@ PVR_ERROR SignalStatus(PVR_SIGNAL_STATUS &signalStatus)
   return PVR_ERROR_NO_ERROR;
 }
 
-int GetRecordingsAmount(void)
-{
-  if (m_data)
-    return m_data->GetRecordingsAmount();
-
-  return -1;
-}
-
-PVR_ERROR GetRecordings(ADDON_HANDLE handle)
-{
-  if (m_data)
-    return m_data->GetRecordings(handle);
-
-  return PVR_ERROR_NOT_IMPLEMENTED;
-}
-
-bool CanPauseStream(void) 
-{ 
-	return true; 
-}
-
-const char * GetLiveStreamURL(const PVR_CHANNEL &channel) 
-{ 
-	return channel.strStreamURL; 
-}
-
 /** UNUSED API FUNCTIONS */
+const char * GetLiveStreamURL(const PVR_CHANNEL &channel)  { return ""; }
+bool CanPauseStream(void) { return false; }
+int GetRecordingsAmount(void) { return -1; }
+PVR_ERROR GetRecordings(ADDON_HANDLE handle) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR DialogChannelScan(void) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR CallMenuHook(const PVR_MENUHOOK &menuhook) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR DeleteChannel(const PVR_CHANNEL &channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
