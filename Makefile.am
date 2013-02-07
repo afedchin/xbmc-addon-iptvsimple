@@ -7,13 +7,22 @@ SUBDIRS = \
 DIST_SUBDIRS = \
 	$(SUBDIRS)
 
-dist-zip: all
+install: all
+	mkdir -m 755 -p $(DESTDIR)@LIBDIR@/pvr.iptvsimple
+	mkdir -m 755 -p $(DESTDIR)@DATADIR@/pvr.iptvsimple
+	cp -r addons/pvr.iptvsimple .
+	$(STRIP) -s -x pvr.iptvsimple/$(ADDONNAME)
+	cp -f pvr.iptvsimple/$(ADDONNAME) $(DESTDIR)@LIBDIR@/pvr.iptvsimple ; chmod 655 $(DESTDIR)@LIBDIR@/pvr.iptvsimple/$(ADDONNAME)
+	cp -r -f @abs_top_srcdir@/addons/pvr.iptvsimple/* $(DESTDIR)@DATADIR@/pvr.iptvsimple ; chmod -R o+rx $(DESTDIR)@DATADIR@/pvr.iptvsimple
+	rm -Rf pvr.iptvsimple
+
+zip: all
 	cp -r addons/pvr.iptvsimple .
 	$(STRIP) -s -x pvr.iptvsimple/$(ADDONNAME)
 	zip -9 -r ./pvr.iptvsimple.$(VERSION).zip pvr.iptvsimple --exclude \*.am \*.in \*Makefile \*.gitignore
 	rm -Rf pvr.iptvsimple
 
-dist-zip-daily: all
+zip-daily: all
 	cp -r addons/pvr.iptvsimple .
 	cat pvr.iptvsimple/addon.xml | sed "s/$(VERSION)/$(VERSION).$(DATE)/g" > pvr.iptvsimple/addon.xml.new
 	mv pvr.iptvsimple/addon.xml.new pvr.iptvsimple/addon.xml
