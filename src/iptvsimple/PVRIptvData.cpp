@@ -295,10 +295,12 @@ bool PVRIptvData::LoadPlayList(void)
 	std::stringstream stream(strPlaylistContent);
 
 	/* load channels */
+	bool isfirst = true;
+
 	int iUniqueChannelId = 0;
 	int iUniqueGroupId = 0;
+	int iCurrentGroupId = 0;
 	int iChannelNum = 0;
-	bool isfirst = true;
 	int iEPGTimeShift = 0;
 
 	PVRIptvChannel tmpChannel;
@@ -392,12 +394,23 @@ bool PVRIptvData::LoadPlayList(void)
 
 				if (!strGroupName.IsEmpty())
 				{
-					PVRIptvChannelGroup group;
-					group.strGroupName = XBMC->UnknownToUTF8(strGroupName);
-					group.iGroupId = ++iUniqueGroupId;
-					group.bRadio = false;
+					strGroupName = XBMC->UnknownToUTF8(strGroupName);
 
-					m_groups.push_back(group);
+					PVRIptvChannelGroup * pGroup;
+					if ((pGroup = FindGroup(strGroupName)) == NULL)
+					{
+						PVRIptvChannelGroup group;
+						group.strGroupName = strGroupName;
+						group.iGroupId = ++iUniqueGroupId;
+						group.bRadio = false;
+
+						m_groups.push_back(group);
+						iCurrentGroupId = iUniqueGroupId;
+					}
+					else
+					{
+						iCurrentGroupId = pGroup->iGroupId;
+					}
 				}
 			}
 		} 
@@ -417,9 +430,9 @@ bool PVRIptvData::LoadPlayList(void)
 
 			m_channels.push_back(channel);
 
-			if (iUniqueGroupId > 0) 
+			if (iCurrentGroupId > 0) 
 			{
-				m_groups.at(iUniqueGroupId - 1).members.push_back(channel.iChannelNumber);
+				m_groups.at(iCurrentGroupId - 1).members.push_back(channel.iChannelNumber);
 			}
 
 			tmpChannel.strTvgId = "";
@@ -669,6 +682,20 @@ PVRIptvChannel * PVRIptvData::FindChannel(const std::string &strId, const std::s
 			return &*it;
 		}
 		if (it->strChannelName == strName)
+		{
+			return &*it;
+		}
+	}
+
+	return NULL;
+}
+
+PVRIptvChannelGroup * PVRIptvData::FindGroup(const std::string &strName)
+{
+	vector<PVRIptvChannelGroup>::iterator it;
+	for(it = m_groups.begin(); it < m_groups.end(); it++)
+	{
+		if (it->strGroupName == strName)
 		{
 			return &*it;
 		}

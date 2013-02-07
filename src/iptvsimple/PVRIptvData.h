@@ -104,6 +104,7 @@ protected:
   virtual bool 					LoadEPG(time_t iStart, time_t iEnd);
   virtual int 					GetFileContents(CStdString& url, std::string &strContent);
   virtual PVRIptvChannel *      FindChannel(const std::string &strId, const std::string &strName);
+  virtual PVRIptvChannelGroup * FindGroup(const std::string &strName);
   virtual PVRIptvEpgChannel *   FindEpg(const std::string &strId);
   virtual PVRIptvEpgChannel *   FindEpgForChannel(PVRIptvChannel &channel);
   virtual int 					ParseDateTime(CStdString strDate, bool iDateFormat = true);
