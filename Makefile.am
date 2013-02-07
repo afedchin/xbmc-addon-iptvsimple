@@ -16,13 +16,17 @@ install: all
 	cp -r -f @abs_top_srcdir@/addons/pvr.iptvsimple/* $(DESTDIR)@DATADIR@/pvr.iptvsimple ; chmod -R o+rx $(DESTDIR)@DATADIR@/pvr.iptvsimple
 	rm -Rf pvr.iptvsimple
 
-zip: all
+uninstall:
+	rm -Rf $(DESTDIR)@LIBDIR@/pvr.iptvsimple
+	rm -Rf $(DESTDIR)@DATADIR@/pvr.iptvsimple
+
+dist-zip: all
 	cp -r addons/pvr.iptvsimple .
 	$(STRIP) -s -x pvr.iptvsimple/$(ADDONNAME)
 	zip -9 -r ./pvr.iptvsimple.$(VERSION).zip pvr.iptvsimple --exclude \*.am \*.in \*Makefile \*.gitignore
 	rm -Rf pvr.iptvsimple
 
-zip-daily: all
+dist-zip-daily: all
 	cp -r addons/pvr.iptvsimple .
 	cat pvr.iptvsimple/addon.xml | sed "s/$(VERSION)/$(VERSION).$(DATE)/g" > pvr.iptvsimple/addon.xml.new
 	mv pvr.iptvsimple/addon.xml.new pvr.iptvsimple/addon.xml

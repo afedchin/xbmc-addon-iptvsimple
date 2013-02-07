@@ -6,7 +6,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_INIT([xbmc-addon-iptvsimple], [MAJOR.MINOR.MICRO], [Anton Fedchin])
 
 AC_CONFIG_AUX_DIR(autotools)
-PREFIX_DEFAULT="/usr/local"
+PREFIX_DEFAULT="/usr"
 AC_PREFIX_DEFAULT($PREFIX_DEFAULT)
 
 AC_CANONICAL_HOST
@@ -59,7 +59,6 @@ case $host in
     AC_SUBST(ARCH_DEFINES, "-D_POWERPC64")
     ;;
   *-apple-*)
-    ADDONNAME=XBMC_IPTV_Simple_OSX.pvr
     SOEXT=dylib
     ISAPPLE=true
     ;;
