@@ -41,7 +41,7 @@
 #define TVG_INFO_SHIFT_MARKER  "tvg-shift="
 
 #define GROUP_NAME_MARKER      "group-title="
-#define SECONDS_IN_DAY		   5184000
+#define SECONDS_IN_DAY		   86400
 
 using namespace std;
 using namespace ADDON;
@@ -247,8 +247,8 @@ bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd)
 		int iTmpStart = ParseDateTime(strStart);
 		int iTmpEnd = ParseDateTime(strStop);
 
-		if ((iTmpEnd < iStart + iMinShiftTime) ||
-			(iTmpStart > iEnd + iMaxShiftTime))
+		if ((iTmpEnd + iMaxShiftTime < iStart) ||
+			(iTmpStart + iMinShiftTime > iEnd))
 		{
 			continue;
 		}
