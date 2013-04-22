@@ -1,9 +1,9 @@
 /*
- *      Copyright (C) 2011 Pulse-Eight
- *      http://www.pulse-eight.com/
- *
  *      Copyright (C) 2013 Anton Fedchin
  *      http://github.com/afedchin/xbmc-addon-iptvsimple/
+ *
+ *      Copyright (C) 2011 Pulse-Eight
+ *      http://www.pulse-eight.com/
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@
 #define TVG_INFO_SHIFT_MARKER  "tvg-shift="
 
 #define GROUP_NAME_MARKER      "group-title="
+#define RADIO_MARKER           "radio="
 #define SECONDS_IN_DAY		   86400
 
 using namespace std;
@@ -104,6 +105,13 @@ PVRIptvData::~PVRIptvData(void)
 
 bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd) 
 {
+	if (m_strXMLTVUrl.IsEmpty())
+	{
+		XBMC->Log(LOG_NOTICE, "EPG file path is not configured. EPG not loaded.");
+		m_bEGPLoaded = true;
+		return false;
+	}
+
 	std::string data;
 	std::string decompressed;
 	int iReaded = 0;
@@ -130,6 +138,8 @@ bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd)
 	}
 
 	char * buffer;
+
+    // gzip packed
 	if (data[0] == '\x1F' && 
 		data[1] == '\x8B' && 
 		data[2] == '\x08') 
@@ -145,6 +155,23 @@ bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd)
 	else
 	{
 		buffer = &(data[0]);
+	}
+
+    // xml should starts with '<?xml'
+	if (buffer[0] != '\x3C' || buffer[1] != '\x3F' || buffer[2] != '\x78' ||
+		buffer[3] != '\x6D' || buffer[4] != '\x6C')
+	{
+		// check for tar archive
+		if (strcmp(buffer + 0x101, "ustar") ||
+			strcmp(buffer + 0x101, "GNUtar"))
+		{
+			buffer += 0x200; // RECORDSIZE = 512
+		}
+		else
+		{
+			m_bEGPLoaded = true;
+			return false;
+		}
 	}
 
 	xml_document<> xmlDoc;
@@ -285,6 +312,12 @@ bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd)
 
 bool PVRIptvData::LoadPlayList(void) 
 {
+	if (m_strM3uUrl.IsEmpty())
+	{
+		XBMC->Log(LOG_NOTICE, "Playlist file path is not configured. Channels not loaded.");
+		return false;
+	}
+
 	CStdString strPlaylistContent;
 	if (!GetCachedFileContents(M3U_FILE_NAME, m_strM3uUrl, strPlaylistContent))
 	{
@@ -295,7 +328,7 @@ bool PVRIptvData::LoadPlayList(void)
 	std::stringstream stream(strPlaylistContent);
 
 	/* load channels */
-	bool isfirst = true;
+	bool bFirst = true;
 
 	int iUniqueChannelId = 0;
 	int iUniqueGroupId = 0;
@@ -324,9 +357,9 @@ bool PVRIptvData::LoadPlayList(void)
 			continue;
 		}
 
-		if (isfirst) 
+		if (bFirst) 
 		{
-			isfirst = false;
+			bFirst = false;
 			if (strLine.Left(3) == "\xEF\xBB\xBF")
 			{
 				strLine.Delete(0, 3);
@@ -343,15 +376,17 @@ bool PVRIptvData::LoadPlayList(void)
 			}
 		}
 
-		double		fTvgShift = 0;
-		CStdString	strChnlName = "";
-		CStdString	strTvgId = "";
-		CStdString	strTvgName = "";
-		CStdString	strTvgLogo = "";
-		CStdString	strGroupName = "";
-
 		if (strLine.Left((int)strlen(M3U_INFO_MARKER)) == M3U_INFO_MARKER) 
 		{
+			bool        bRadio       = false;
+			double      fTvgShift    = 0;
+			CStdString	strChnlName  = "";
+			CStdString	strTvgId     = "";
+			CStdString	strTvgName   = "";
+			CStdString	strTvgLogo   = "";
+			CStdString	strGroupName = "";
+			CStdString	strRadio     = "";
+
 			// parse line
 			int iColon = (int)strLine.Find(':');
 			int iComma = (int)strLine.ReverseFind(',');
@@ -359,7 +394,7 @@ bool PVRIptvData::LoadPlayList(void)
 			{
 				// parse name
 				iComma++;
-				strChnlName = strLine.Right((int)strLine.size() - iComma);
+				strChnlName = strLine.Right((int)strLine.size() - iComma).Trim();
 				tmpChannel.strChannelName = XBMC->UnknownToUTF8(strChnlName);
 
 				// parse info
@@ -369,6 +404,7 @@ bool PVRIptvData::LoadPlayList(void)
 				strTvgName = ReadMarkerValue(strInfoLine, TVG_INFO_NAME_MARKER);
 				strTvgLogo = ReadMarkerValue(strInfoLine, TVG_INFO_LOGO_MARKER);
 				strGroupName = ReadMarkerValue(strInfoLine, GROUP_NAME_MARKER);
+				strRadio = ReadMarkerValue(strInfoLine, RADIO_MARKER);
 				fTvgShift = atof(ReadMarkerValue(strInfoLine, TVG_INFO_SHIFT_MARKER));
 
 				if (strTvgId.IsEmpty())
@@ -382,10 +418,12 @@ bool PVRIptvData::LoadPlayList(void)
 					strTvgLogo = strChnlName;
 				}
 
-				tmpChannel.strTvgId = strTvgId;
+				bRadio = !strRadio.CompareNoCase("true");
+				tmpChannel.strTvgId   = strTvgId;
 				tmpChannel.strTvgName = XBMC->UnknownToUTF8(strTvgName);
 				tmpChannel.strTvgLogo = XBMC->UnknownToUTF8(strTvgLogo);
-				tmpChannel.iTvgShift = (int)(fTvgShift * 3600.0);
+				tmpChannel.iTvgShift  = (int)(fTvgShift * 3600.0);
+				tmpChannel.bRadio     = bRadio;
 
 				if (tmpChannel.iTvgShift == 0 && iEPGTimeShift != 0)
 				{
@@ -402,7 +440,7 @@ bool PVRIptvData::LoadPlayList(void)
 						PVRIptvChannelGroup group;
 						group.strGroupName = strGroupName;
 						group.iGroupId = ++iUniqueGroupId;
-						group.bRadio = false;
+						group.bRadio = bRadio;
 
 						m_groups.push_back(group);
 						iCurrentGroupId = iUniqueGroupId;
@@ -417,29 +455,31 @@ bool PVRIptvData::LoadPlayList(void)
 		else if (strLine[0] != '#')
 		{
 			PVRIptvChannel channel;
-			channel.iUniqueId		= ++iUniqueChannelId;
-			channel.iChannelNumber	= ++iChannelNum;
-			channel.strTvgId		= tmpChannel.strTvgId;
-			channel.strChannelName	= tmpChannel.strChannelName;
-			channel.strTvgName		= tmpChannel.strTvgName;
-			channel.strTvgLogo		= tmpChannel.strTvgLogo;
-			channel.iTvgShift		= tmpChannel.iTvgShift;
-			channel.strStreamURL	= strLine;
+			channel.iUniqueId         = ++iUniqueChannelId;
+			channel.iChannelNumber    = ++iChannelNum;
+			channel.strTvgId          = tmpChannel.strTvgId;
+			channel.strChannelName    = tmpChannel.strChannelName;
+			channel.strTvgName        = tmpChannel.strTvgName;
+			channel.strTvgLogo        = tmpChannel.strTvgLogo;
+			channel.iTvgShift         = tmpChannel.iTvgShift;
+			channel.bRadio            = tmpChannel.bRadio;
+			channel.strStreamURL      = strLine;
 			channel.iEncryptionSystem = 0;
-			channel.bRadio = false;
-
-			m_channels.push_back(channel);
 
 			if (iCurrentGroupId > 0) 
 			{
+				channel.bRadio = m_groups.at(iCurrentGroupId - 1).bRadio;
 				m_groups.at(iCurrentGroupId - 1).members.push_back(channel.iChannelNumber);
 			}
+
+			m_channels.push_back(channel);
 
 			tmpChannel.strTvgId = "";
 			tmpChannel.strChannelName = "";
 			tmpChannel.strTvgName = "";
 			tmpChannel.strTvgLogo = "";
 			tmpChannel.iTvgShift = 0;
+			tmpChannel.bRadio = false;
 		}
 	}
   
