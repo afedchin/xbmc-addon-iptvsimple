@@ -1,10 +1,10 @@
 #pragma once
 /*
- *      Copyright (C) 2011 Pulse-Eight
- *      http://www.pulse-eight.com/
- *
  *      Copyright (C) 2013 Anton Fedchin
  *      http://github.com/afedchin/xbmc-addon-iptvsimple/
+ *
+ *      Copyright (C) 2011 Pulse-Eight
+ *      http://www.pulse-eight.com/
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,11 +25,11 @@
 
 #include "libXBMC_addon.h"
 #include "libXBMC_pvr.h"
+#include "libXBMC_gui.h"
 
-#define PVR_CLIENT_VERSION     "0.1.1"
-#define M3U_FILE_NAME          "iptv.m3u"
-#define TVG_FILE_NAME          "xmltv.xml.gz"
-#define DEFAULT_TVG_PATH       "http://www.teleguide.info/download/new3/xmltv.xml.gz"
+#define PVR_CLIENT_VERSION     "0.1.3"
+#define M3U_FILE_NAME          "iptv.m3u.cache"
+#define TVG_FILE_NAME          "xmltv.xml.cache"
 
 /*!
  * @brief PVR macros for string exchange

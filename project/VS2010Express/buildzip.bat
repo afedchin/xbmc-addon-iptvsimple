@@ -27,10 +27,10 @@ IF %comp%==vs2010 (
 	)
 )
 
-  IF NOT EXIST %NET% (
-     set DIETEXT=Visual Studio .NET 2010 was not found.
-	 goto DIE
-  )
+IF NOT EXIST %NET% (
+   set DIETEXT=Visual Studio .NET 2010 was not found.
+   goto DIE
+)
 
 set OPTS_EXE=xbmc-addon-iptvsimple.sln /build %buildconfig%
 set CLEAN_EXE=xbmc-addon-iptvsimple.sln /clean %buildconfig%
@@ -49,11 +49,7 @@ IF EXIST ..\..\addons\pvr.iptvsimple\addon.xml del ..\..\addons\pvr.iptvsimple\a
 
 REM ------- Grab version from configure.in into addon.xml file--------
 
-
-
 setlocal enabledelayedexpansion 
-
-
 
 for /f "usebackq delims=" %%i in ("..\..\configure.in") do (
 
@@ -76,15 +72,13 @@ for /f "usebackq delims=" %%i in ("..\..\configure.in") do (
 		)
 	)
 
-for /F "delims=" %%i in (test.tmp) do if not defined zeile set "zeile=%%i"
-
+for /F "delims=" %%i in (test.tmp) do set "zeile=%%i"
 
 set "Von=  version" 
 
 set "Nach=  version="X"" 
 
 set Nach=!Nach:X=%zeile%!
-
 
 
 for /f "usebackq delims=" %%i in ("../../addons/pvr.iptvsimple/addon.xml.in") do (
@@ -98,8 +92,10 @@ for /f "usebackq delims=" %%i in ("../../addons/pvr.iptvsimple/addon.xml.in") do
 	set line1=!line1:~0,9!
 
 	set line1=!line1:~2,7!
-	IF !Line1!==version set Line=!Line:~0,-12!
-	Echo !Line! >> ../../addons/pvr.iptvsimple/addon.xml 
+
+	if !Line1!==version set Line=!Line:~0,-12!
+
+	echo !Line! >> ../../addons/pvr.iptvsimple/addon.xml 
 
 	)
 
@@ -119,11 +115,9 @@ IF NOT EXIST %ZIP% (
      goto DIE
 )
 
-IF EXIST pvr.vuplus.zip del pvr.vuplus.zip > NUL
+IF EXIST pvr.iptvsimple.%maj%.%min%.%mic%.zip del pvr.iptvsimple.%maj%.%min%.%mic%.zip > NUL
 
 %ZIP% a pvr.iptvsimple.%maj%.%min%.%mic%.zip ..\..\addons\pvr.iptvsimple -xr!*.in -xr!*.am -xr!*.exp -xr!*.ilk -xr!*.pdb -xr!*.lib -xr!.gitignore >NUL
-
-REM move pvr.vuplus.%maj%.%min%.%mic%.zip ..\ > NUL
 
 goto END
 

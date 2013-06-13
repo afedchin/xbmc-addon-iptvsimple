@@ -1,9 +1,9 @@
 /*
- *      Copyright (C) 2011 Pulse-Eight
- *      http://www.pulse-eight.com/
- *
  *      Copyright (C) 2013 Anton Fedchin
  *      http://github.com/afedchin/xbmc-addon-iptvsimple/
+ *
+ *      Copyright (C) 2011 Pulse-Eight
+ *      http://www.pulse-eight.com/
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ std::string g_strClientPath           = "";
 CHelper_libXBMC_addon *XBMC           = NULL;
 CHelper_libXBMC_pvr   *PVR            = NULL;
 
-std::string g_strTvgPath              = DEFAULT_TVG_PATH;
+std::string g_strTvgPath              = "";
 std::string g_strM3UPath              = "";
 std::string g_strLogoPath             = "";
 int         g_iEPGTimeShift           = 0;
@@ -111,10 +111,6 @@ void ADDON_ReadSettings(void)
 	if (XBMC->GetSetting(strSettingName, &buffer)) 
 	{
 		g_strTvgPath = buffer;
-	}
-	if (g_strTvgPath == "") 
-	{
-		g_strTvgPath = DEFAULT_TVG_PATH;
 	}
     // BUG! xbmc does not return slider value 
 	/*float dTimeShift;
@@ -215,100 +211,29 @@ unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet)
 
 ADDON_STATUS ADDON_SetSetting(const char *settingName, const void *settingValue)
 {
-	string str = settingName;
-	if (str == "m3uPathType" /*|| str == "m3uUrl" || str == "m3uPath"*/)
-	{
-		int iPathType = 0;
-		char buffer[1024];
-		string strTmp = g_strM3UPath;
+	// reset cache and restart addon 
 
-		if (!XBMC->GetSetting("m3uPathType", &iPathType)) 
-		{
-			iPathType = 1;
-		}
-		CStdString strName = iPathType ? "m3uUrl" : "m3uPath";
-		if (XBMC->GetSetting(strName, &buffer)) 
-		{
-			g_strM3UPath = buffer;
-		}
-		if (g_strM3UPath != strTmp) 
-		{
-			string strFile = GetUserFilePath(M3U_FILE_NAME);
-			if (XBMC->FileExists(strFile.c_str(), false))
-			{
+	string strFile = GetUserFilePath(M3U_FILE_NAME);
+	if (XBMC->FileExists(strFile.c_str(), false))
+	{
 #ifdef _WIN32
-				DeleteFile(strFile.c_str());
+		DeleteFile(strFile.c_str());
 #else
-				XBMC->DeleteFile(strFile.c_str());
+		XBMC->DeleteFile(strFile.c_str());
 #endif
-			}
-			// TODO inspecting crashes
-			// m_data->ReloadPlayList(g_strM3UPath.c_str());
-
-			return ADDON_STATUS_OK;
-		}
 	}
-	if (str == "epgPathType" /*|| str == "epgPath" || str == "epgUrl"*/)
-	{
-		int iPathType = 0;
-		char buffer[1024];
-		string strTmp = g_strTvgPath;
 
-		if (!XBMC->GetSetting("epgPathType", &iPathType)) 
-		{
-			iPathType = 1;
-		}
-		CStdString strName = iPathType ? "epgUrl" : "epgPath";
-		if (XBMC->GetSetting(strName, &buffer)) 
-		{
-			g_strTvgPath = buffer;
-		}
-		if (g_strTvgPath != strTmp) 
-		{
-			string strFile = GetUserFilePath(TVG_FILE_NAME);
-			if (XBMC->FileExists(strFile.c_str(), false))
-			{
+	strFile = GetUserFilePath(TVG_FILE_NAME);
+	if (XBMC->FileExists(strFile.c_str(), false))
+	{
 #ifdef _WIN32
-				DeleteFile(strFile.c_str());
+		DeleteFile(strFile.c_str());
 #else
-				XBMC->DeleteFile(strFile.c_str());
+		XBMC->DeleteFile(strFile.c_str());
 #endif
-			}
-			// TODO inspecting crashes
-			//m_data->ReloadEPG(g_strTvgPath.c_str());
-
-			return ADDON_STATUS_OK;
-		}
-	}
-	if (str == "epgTimeShift")
-	{
-		double dTimeShift = *(double*) settingValue;
-		int iTimeShift = (int) (dTimeShift * 3600.0);
-		if (g_iEPGTimeShift != iTimeShift)
-		{
-			return ADDON_STATUS_OK;
-		}
-	}
-	if (str == "epgTSOverride")
-	{
-		bool bOverride = *(bool*) settingValue;
-		if (g_bTSOverride != bOverride)
-		{
-			return ADDON_STATUS_OK;
-		}
-	}
-	if (str == "logoPath")
-	{
-		std::string strTmp = g_strLogoPath;
-		g_strLogoPath = (const char*) settingValue;
-		if (g_strLogoPath != strTmp)
-		{
-			m_data->ReaplyChannelsLogos(g_strLogoPath.c_str());
-		}
-		return ADDON_STATUS_OK;
 	}
 
-	return ADDON_STATUS_OK;
+	return ADDON_STATUS_NEED_RESTART;
 }
 
 void ADDON_Stop()
@@ -316,6 +241,10 @@ void ADDON_Stop()
 }
 
 void ADDON_FreeSettings()
+{
+}
+
+void ADDON_Announce(const char *flag, const char *sender, const char *message, const void *data)
 {
 }
 
@@ -335,11 +264,12 @@ const char* GetMininumPVRAPIVersion(void)
   return strMinApiVersion;
 }
 
+
 PVR_ERROR GetAddonCapabilities(PVR_ADDON_CAPABILITIES* pCapabilities)
 {
   pCapabilities->bSupportsEPG             = true;
   pCapabilities->bSupportsTV              = true;
-  pCapabilities->bSupportsRadio           = false;
+  pCapabilities->bSupportsRadio           = true;
   pCapabilities->bSupportsChannelGroups   = true;
   pCapabilities->bSupportsRecordings      = false;
 
