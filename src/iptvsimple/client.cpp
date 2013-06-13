@@ -44,99 +44,99 @@ PVRIptvChannel m_currentChannel;
  * Default values are defined inside client.h
  * and exported to the other source files.
  */
-std::string g_strUserPath             = "";
-std::string g_strClientPath           = "";
+std::string g_strUserPath   = "";
+std::string g_strClientPath = "";
 
-CHelper_libXBMC_addon *XBMC           = NULL;
-CHelper_libXBMC_pvr   *PVR            = NULL;
+CHelper_libXBMC_addon *XBMC = NULL;
+CHelper_libXBMC_pvr   *PVR  = NULL;
 
-std::string g_strTvgPath              = "";
-std::string g_strM3UPath              = "";
-std::string g_strLogoPath             = "";
-int         g_iEPGTimeShift           = 0;
-bool        g_bTSOverride             = true;
+std::string g_strTvgPath    = "";
+std::string g_strM3UPath    = "";
+std::string g_strLogoPath   = "";
+int         g_iEPGTimeShift = 0;
+bool        g_bTSOverride   = true;
 
 extern std::string PathCombine(const std::string &strPath, const std::string &strFileName)
 {
-	std::string strResult = strPath;
-    if (strResult.at(strResult.size() - 1) == '\\' ||
-        strResult.at(strResult.size() - 1) == '/') 
-	{
-      strResult.append(strFileName);
-	}
-	else 
-	{
-      strResult.append("/");
-      strResult.append(strFileName);
-	}
+  std::string strResult = strPath;
+  if (strResult.at(strResult.size() - 1) == '\\' ||
+      strResult.at(strResult.size() - 1) == '/') 
+  {
+    strResult.append(strFileName);
+  }
+  else 
+  {
+    strResult.append("/");
+    strResult.append(strFileName);
+  }
 
-	return strResult;
+  return strResult;
 }
 
 extern std::string GetClientFilePath(const std::string &strFileName)
 {
-	return PathCombine(g_strClientPath, strFileName);
+  return PathCombine(g_strClientPath, strFileName);
 }
 
 extern std::string GetUserFilePath(const std::string &strFileName)
 {
-	return PathCombine(g_strUserPath, strFileName);
+  return PathCombine(g_strUserPath, strFileName);
 }
 
 extern "C" {
 
 void ADDON_ReadSettings(void)
 {
-	char buffer[1024];
-	int iPathType = 0;
-	if (!XBMC->GetSetting("m3uPathType", &iPathType)) 
-	{
-		iPathType = 1;
-	}
-	CStdString strSettingName = iPathType ? "m3uUrl" : "m3uPath";
-	if (XBMC->GetSetting(strSettingName, &buffer)) 
-	{
-		g_strM3UPath = buffer;
-	}
-	if (g_strM3UPath == "") 
-	{
-		g_strM3UPath = GetClientFilePath(M3U_FILE_NAME);
-	}
+  char buffer[1024];
+  int iPathType = 0;
+  if (!XBMC->GetSetting("m3uPathType", &iPathType)) 
+  {
+    iPathType = 1;
+  }
+  CStdString strSettingName = iPathType ? "m3uUrl" : "m3uPath";
+  if (XBMC->GetSetting(strSettingName, &buffer)) 
+  {
+    g_strM3UPath = buffer;
+  }
+  if (g_strM3UPath == "") 
+  {
+    g_strM3UPath = GetClientFilePath(M3U_FILE_NAME);
+  }
 
-	if (!XBMC->GetSetting("epgPathType", &iPathType)) 
-	{
-		iPathType = 1;
-	}
-	strSettingName = iPathType ? "epgUrl" : "epgPath";
-	if (XBMC->GetSetting(strSettingName, &buffer)) 
-	{
-		g_strTvgPath = buffer;
-	}
-    // BUG! xbmc does not return slider value 
-	/*float dTimeShift;
-	if (XBMC->GetSetting("epgTimeShift", &dTimeShift))
-	{
-		g_iEPGTimeShift = (int)(dTimeShift * 3600.0); // hours to seconds
-	}*/
-	int itmpShift;
-	if (XBMC->GetSetting("epgTimeShift_", &itmpShift))
-	{
-		itmpShift -= 12;
-		g_iEPGTimeShift = (int)(itmpShift * 3600.0); // hours to seconds
-	}
-	if (!XBMC->GetSetting("epgTSOverride", &g_bTSOverride))
-	{
-		g_bTSOverride = true;
-	}
+  if (!XBMC->GetSetting("epgPathType", &iPathType)) 
+  {
+    iPathType = 1;
+  }
+  strSettingName = iPathType ? "epgUrl" : "epgPath";
+  if (XBMC->GetSetting(strSettingName, &buffer)) 
+  {
+    g_strTvgPath = buffer;
+  }
+  // BUG! xbmc does not return slider value 
+  //float dTimeShift;
+  //if (XBMC->GetSetting("epgTimeShift", &dTimeShift))
+  //{
+  //  g_iEPGTimeShift = (int)(dTimeShift * 3600.0); // hours to seconds
+  //}
+  int itmpShift;
+  if (XBMC->GetSetting("epgTimeShift_", &itmpShift))
+  {
+    itmpShift -= 12;
+    g_iEPGTimeShift = (int)(itmpShift * 3600.0); // hours to seconds
+  }
+  if (!XBMC->GetSetting("epgTSOverride", &g_bTSOverride))
+  {
+    g_bTSOverride = true;
+  }
     
-	if (XBMC->GetSetting("logoPath", &buffer))
-	{
-		g_strLogoPath = buffer;
-	}
-	if (g_strLogoPath == "")
-	{
-		g_strLogoPath = GetClientFilePath("icons/");
-	}
+  if (XBMC->GetSetting("logoPath", &buffer))
+  {
+    g_strLogoPath = buffer;
+  }
+  if (g_strLogoPath == "")
+  {
+    g_strLogoPath = GetClientFilePath("icons/");
+  }
 }
 
 ADDON_STATUS ADDON_Create(void* hdl, void* props)
@@ -171,10 +171,10 @@ ADDON_STATUS ADDON_Create(void* hdl, void* props)
 
   if (!XBMC->DirectoryExists(g_strUserPath.c_str()))
   {
-#ifdef _WIN32
-	  CreateDirectory(g_strUserPath.c_str(), NULL);
+#ifdef TARGET_WINDOWS
+    CreateDirectory(g_strUserPath.c_str(), NULL);
 #else
-	  XBMC->CreateDirectory(g_strUserPath.c_str());
+    XBMC->CreateDirectory(g_strUserPath.c_str());
 #endif
   }
 
@@ -211,29 +211,29 @@ unsigned int ADDON_GetSettings(ADDON_StructSetting ***sSet)
 
 ADDON_STATUS ADDON_SetSetting(const char *settingName, const void *settingValue)
 {
-	// reset cache and restart addon 
+  // reset cache and restart addon 
 
-	string strFile = GetUserFilePath(M3U_FILE_NAME);
-	if (XBMC->FileExists(strFile.c_str(), false))
-	{
-#ifdef _WIN32
-		DeleteFile(strFile.c_str());
+  string strFile = GetUserFilePath(M3U_FILE_NAME);
+  if (XBMC->FileExists(strFile.c_str(), false))
+  {
+#ifdef TARGET_WINDOWS
+    DeleteFile(strFile.c_str());
 #else
-		XBMC->DeleteFile(strFile.c_str());
+    XBMC->DeleteFile(strFile.c_str());
 #endif
-	}
+  }
 
-	strFile = GetUserFilePath(TVG_FILE_NAME);
-	if (XBMC->FileExists(strFile.c_str(), false))
-	{
-#ifdef _WIN32
-		DeleteFile(strFile.c_str());
+  strFile = GetUserFilePath(TVG_FILE_NAME);
+  if (XBMC->FileExists(strFile.c_str(), false))
+  {
+#ifdef TARGET_WINDOWS
+    DeleteFile(strFile.c_str());
 #else
-		XBMC->DeleteFile(strFile.c_str());
+    XBMC->DeleteFile(strFile.c_str());
 #endif
-	}
+  }
 
-	return ADDON_STATUS_NEED_RESTART;
+  return ADDON_STATUS_NEED_RESTART;
 }
 
 void ADDON_Stop()
@@ -412,7 +412,7 @@ bool CanPauseStream(void) { return false; }
 int GetRecordingsAmount(void) { return -1; }
 PVR_ERROR GetRecordings(ADDON_HANDLE handle) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR DialogChannelScan(void) { return PVR_ERROR_NOT_IMPLEMENTED; }
-PVR_ERROR CallMenuHook(const PVR_MENUHOOK &menuhook) { return PVR_ERROR_NOT_IMPLEMENTED; }
+PVR_ERROR CallMenuHook(const PVR_MENUHOOK &menuhook, const PVR_MENUHOOK_DATA &item) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR DeleteChannel(const PVR_CHANNEL &channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR RenameChannel(const PVR_CHANNEL &channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
 PVR_ERROR MoveChannel(const PVR_CHANNEL &channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
