@@ -161,17 +161,21 @@ bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd)
 	if (buffer[0] != '\x3C' || buffer[1] != '\x3F' || buffer[2] != '\x78' ||
 		buffer[3] != '\x6D' || buffer[4] != '\x6C')
 	{
-		// check for tar archive
-		if (strcmp(buffer + 0x101, "ustar") ||
-			strcmp(buffer + 0x101, "GNUtar"))
-		{
-			buffer += 0x200; // RECORDSIZE = 512
-		}
-		else
-		{
-			m_bEGPLoaded = true;
-			return false;
-		}
+      // check for BOM
+      if (buffer[0] != '\xEF' || buffer[1] != '\xBB' || buffer[2] != '\xBF')
+      {
+        // check for tar archive
+        if (strcmp(buffer + 0x101, "ustar") ||
+            strcmp(buffer + 0x101, "GNUtar"))
+        {
+          buffer += 0x200; // RECORDSIZE = 512
+        }
+        else
+        {
+          m_bEGPLoaded = true;
+          return false;
+        }
+      }
 	}
 
 	xml_document<> xmlDoc;
