@@ -325,10 +325,9 @@ bool PVRIptvData::LoadPlayList(void)
   /* load channels */
   bool bFirst = true;
 
-  int iUniqueChannelId  = 0;
   int iUniqueGroupId    = 0;
   int iCurrentGroupId   = 0;
-  int iChannelNum       = 0;
+  int iChannelNum       = g_iStartNumber;
   int iEPGTimeShift     = 0;
 
   PVRIptvChannel tmpChannel;
@@ -450,8 +449,8 @@ bool PVRIptvData::LoadPlayList(void)
     else if (strLine[0] != '#')
     {
       PVRIptvChannel channel;
-      channel.iUniqueId         = ++iUniqueChannelId;
-      channel.iChannelNumber    = ++iChannelNum;
+      channel.iUniqueId         = GetChannelId(tmpChannel.strChannelName.c_str(), strLine);
+      channel.iChannelNumber    = iChannelNum++;
       channel.strTvgId          = tmpChannel.strTvgId;
       channel.strChannelName    = tmpChannel.strChannelName;
       channel.strTvgName        = tmpChannel.strTvgName;
@@ -464,7 +463,7 @@ bool PVRIptvData::LoadPlayList(void)
       if (iCurrentGroupId > 0) 
       {
         channel.bRadio = m_groups.at(iCurrentGroupId - 1).bRadio;
-        m_groups.at(iCurrentGroupId - 1).members.push_back(channel.iChannelNumber);
+        m_groups.at(iCurrentGroupId - 1).members.push_back(channel.iUniqueId);
       }
 
       m_channels.push_back(channel);
@@ -572,26 +571,23 @@ PVR_ERROR PVRIptvData::GetChannelGroups(ADDON_HANDLE handle, bool bRadio)
 
 PVR_ERROR PVRIptvData::GetChannelGroupMembers(ADDON_HANDLE handle, const PVR_CHANNEL_GROUP &group)
 {
-  for (unsigned int iGroupPtr = 0; iGroupPtr < m_groups.size(); iGroupPtr++)
+  PVRIptvChannelGroup *myGroup;
+  if ((myGroup = FindGroup(group.strGroupName)) != NULL)
   {
-    PVRIptvChannelGroup &myGroup = m_groups.at(iGroupPtr);
-    if (!strcmp(myGroup.strGroupName.c_str(),group.strGroupName))
+    for (unsigned int iChannelPtr = 0; iChannelPtr < myGroup->members.size(); iChannelPtr++)
     {
-      for (unsigned int iChannelPtr = 0; iChannelPtr < myGroup.members.size(); iChannelPtr++)
-      {
-        int iId = myGroup.members.at(iChannelPtr) - 1;
-        if (iId < 0 || iId > (int)m_channels.size() - 1)
-          continue;
-        PVRIptvChannel &channel = m_channels.at(iId);
-        PVR_CHANNEL_GROUP_MEMBER xbmcGroupMember;
-        memset(&xbmcGroupMember, 0, sizeof(PVR_CHANNEL_GROUP_MEMBER));
+      PVRIptvChannel * channel;
+      if ((channel = FindChannelById(myGroup->members.at(iChannelPtr))) == NULL)
+        continue;
 
-        strncpy(xbmcGroupMember.strGroupName, group.strGroupName, sizeof(xbmcGroupMember.strGroupName) - 1);
-        xbmcGroupMember.iChannelUniqueId = channel.iUniqueId;
-        xbmcGroupMember.iChannelNumber   = channel.iChannelNumber;
+      PVR_CHANNEL_GROUP_MEMBER xbmcGroupMember;
+      memset(&xbmcGroupMember, 0, sizeof(PVR_CHANNEL_GROUP_MEMBER));
 
-        PVR->TransferChannelGroupMember(handle, &xbmcGroupMember);
-      }
+      strncpy(xbmcGroupMember.strGroupName, group.strGroupName, sizeof(xbmcGroupMember.strGroupName) - 1);
+      xbmcGroupMember.iChannelUniqueId = channel->iUniqueId;
+      xbmcGroupMember.iChannelNumber   = channel->iChannelNumber;
+
+      PVR->TransferChannelGroupMember(handle, &xbmcGroupMember);
     }
   }
 
@@ -604,12 +600,9 @@ PVR_ERROR PVRIptvData::GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &
   for (myChannel = m_channels.begin(); myChannel < m_channels.end(); myChannel++)
   {
     if (myChannel->iUniqueId != (int) channel.iUniqueId)
-    {
       continue;
-    }
 
-    if (!m_bEGPLoaded || 
-      iStart > m_iLastStart || iEnd > m_iLastEnd) 
+    if (!m_bEGPLoaded || iStart > m_iLastStart || iEnd > m_iLastEnd) 
     {
       if (LoadEPG(iStart, iEnd))
       {
@@ -619,8 +612,7 @@ PVR_ERROR PVRIptvData::GetEPGForChannel(ADDON_HANDLE handle, const PVR_CHANNEL &
     }
 
     PVRIptvEpgChannel *epg;
-    if ((epg = FindEpgForChannel(*myChannel)) == NULL
-      || epg->epg.size() == 0)
+    if ((epg = FindEpgForChannel(*myChannel)) == NULL || epg->epg.size() == 0)
     {
       return PVR_ERROR_NO_ERROR;
     }
@@ -731,6 +723,20 @@ PVRIptvChannelGroup * PVRIptvData::FindGroup(const std::string &strName)
   for(it = m_groups.begin(); it < m_groups.end(); it++)
   {
     if (it->strGroupName == strName)
+    {
+      return &*it;
+    }
+  }
+
+  return NULL;
+}
+
+PVRIptvChannel * PVRIptvData::FindChannelById(int iChannelId)
+{
+  vector<PVRIptvChannel>::iterator it;
+  for(it = m_channels.begin(); it < m_channels.end(); it++)
+  {
+    if (it->iUniqueId == iChannelId)
     {
       return &*it;
     }
@@ -895,9 +901,7 @@ int PVRIptvData::GetCachedFileContents(const std::string &strCachedName, const s
 void PVRIptvData::ApplyChannelsLogos()
 {
   if (m_strLogoPath.IsEmpty())
-  {
     return;
-  }
 
   vector<PVRIptvChannel>::iterator channel;
   for(channel = m_channels.begin(); channel < m_channels.end(); channel++)
@@ -917,8 +921,6 @@ void PVRIptvData::ReaplyChannelsLogos(const char * strNewPath)
     PVR->TriggerChannelUpdate();
     PVR->TriggerChannelGroupsUpdate();
   }
-
-  return;
 }
 
 void PVRIptvData::ReloadEPG(const char * strNewPath)
@@ -980,4 +982,18 @@ CStdString PVRIptvData::ReadMarkerValue(std::string &strLine, const char* strMar
   }
 
   return std::string("");
+}
+
+int PVRIptvData::GetChannelId(const char * strChannelName, const char * strStreamUrl) 
+{
+  std::string concat(strChannelName);
+  concat.append(strStreamUrl);
+
+  const char* strString = concat.c_str();
+  int iId = 0;
+  int c;
+  while (c = *strString++)
+    iId = ((iId << 5) + iId) + c; /* iId * 33 + c */
+
+  return abs(iId);
 }
