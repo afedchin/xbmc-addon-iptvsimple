@@ -43,11 +43,12 @@ extern std::string                   g_strClientPath;
 extern ADDON::CHelper_libXBMC_addon *XBMC;
 extern CHelper_libXBMC_pvr          *PVR;
 
-extern std::string   g_strM3UPath;
-extern std::string   g_strTvgPath;
-extern std::string   g_strLogoPath;
-extern int           g_iEPGTimeShift;
-extern bool          g_bTSOverride;
+extern std::string g_strM3UPath;
+extern std::string g_strTvgPath;
+extern std::string g_strLogoPath;
+extern int         g_iEPGTimeShift;
+extern int         g_iStartNumber;
+extern bool        g_bTSOverride;
 
 extern std::string PathCombine(const std::string &strPath, const std::string &strFileName);
 extern std::string GetClientFilePath(const std::string &strFileName);
