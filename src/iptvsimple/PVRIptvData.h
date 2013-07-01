@@ -98,7 +98,6 @@ protected:
   virtual PVRIptvChannelGroup *FindGroup(const std::string &strName);
   virtual PVRIptvEpgChannel   *FindEpg(const std::string &strId);
   virtual PVRIptvEpgChannel   *FindEpgForChannel(PVRIptvChannel &channel);
-  virtual PVRIptvChannel      *FindChannelById(int iChannelId);
   virtual int                  ParseDateTime(CStdString strDate, bool iDateFormat = true);
   virtual bool                 GzipInflate( const std::string &compressedBytes, std::string &uncompressedBytes);
   virtual int                  GetCachedFileContents(const std::string &strCachedName, const std::string &strFilePath, std::string &strContent);
