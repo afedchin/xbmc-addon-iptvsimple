@@ -1,6 +1,6 @@
-m4_define([MAJOR], 0)
-m4_define([MINOR], 1)
-m4_define([MICRO], 5)
+m4_define([MAJOR], 1)
+m4_define([MINOR], 6)
+m4_define([MICRO], 1)
 
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT([xbmc-addon-iptvsimple], [MAJOR.MINOR.MICRO], [Anton Fedchin])
