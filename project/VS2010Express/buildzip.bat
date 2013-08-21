@@ -1,4 +1,5 @@
 @ECHO OFF
+SETLOCAL ENABLEDELAYEDEXPANSION
 CLS
 COLOR 1B
 TITLE XBMC Addon for IPTV
@@ -18,13 +19,28 @@ FOR %%b in (%1, %2, %3, %4, %5) DO (
 SET buildconfig=Release
 
 IF %comp%==vs2010 (
-  IF "%VS100COMNTOOLS%"=="" (
+  REM look for MSBuild.exe in .NET Framework 4.x
+  FOR /F "tokens=3* delims=	" %%A IN ('REG QUERY HKLM\SOFTWARE\Microsoft\MSBuild\ToolsVersions\4.0 /v MSBuildToolsPath') DO SET NET=%%AMSBuild.exe
+  IF NOT EXIST "!NET!" (
+    FOR /F "tokens=3* delims= " %%A IN ('REG QUERY HKLM\SOFTWARE\Microsoft\MSBuild\ToolsVersions\4.0 /v MSBuildToolsPath') DO SET NET=%%AMSBuild.exe
+  )
+
+  IF EXIST "!NET!" (
+    set msbuildemitsolution=1
+    set OPTS_EXE=xbmc-addon-iptvsimple.sln /t:Build /p:Configuration="%buildconfig%"
+    set CLEAN_EXE=xbmc-addon-iptvsimple.sln /t:Clean /p:Configuration="%buildconfig%"
+  ) ELSE (
+    IF "%VS100COMNTOOLS%"=="" (
 		set NET="%ProgramFiles%\Microsoft Visual Studio 10.0\Common7\IDE\VCExpress.exe"
 	) ELSE IF EXIST "%VS100COMNTOOLS%\..\IDE\VCExpress.exe" (
 		set NET="%VS100COMNTOOLS%\..\IDE\VCExpress.exe"
 	) ELSE IF EXIST "%VS100COMNTOOLS%\..\IDE\devenv.exe" (
 		set NET="%VS100COMNTOOLS%\..\IDE\devenv.exe"
 	)
+
+    set OPTS_EXE=xbmc-addon-iptvsimple.sln /build %buildconfig%
+    set CLEAN_EXE=xbmc-addon-iptvsimple.sln /clean %buildconfig%
+  )	
 )
 
 IF NOT EXIST %NET% (
@@ -32,20 +48,16 @@ IF NOT EXIST %NET% (
    goto DIE
 )
 
-set OPTS_EXE=xbmc-addon-iptvsimple.sln /build %buildconfig%
-set CLEAN_EXE=xbmc-addon-iptvsimple.sln /clean %buildconfig%
-
-
+ECHO Wait while preparing the build.
+ECHO ------------------------------------------------------------
 ECHO Cleaning Solution...
 %NET% %CLEAN_EXE%
+ECHO ------------------------------------------------------------
 ECHO Compiling Addon for XBMC...
 %NET% %OPTS_EXE%
 
-
 IF EXIST ..\..\addons\pvr.iptvsimple\changelog.txt del ..\..\addons\pvr.iptvsimple\changelog.txt > NUL
 IF EXIST ..\..\addons\pvr.iptvsimple\addon.xml del ..\..\addons\pvr.iptvsimple\addon.xml > NUL
-
-
 
 REM ------- Grab version from configure.in into addon.xml file--------
 
@@ -73,39 +85,24 @@ for /f "usebackq delims=" %%i in ("..\..\configure.in") do (
 	)
 
 for /F "delims=" %%i in (test.tmp) do set "zeile=%%i"
-
 set "Von=  version" 
-
 set "Nach=  version="X"" 
-
 set Nach=!Nach:X=%zeile%!
 
-
 for /f "usebackq delims=" %%i in ("../../addons/pvr.iptvsimple/addon.xml.in") do (
-
 	set "Line=%%i"
-
 	set Line=!Line:%Von%=%Nach%!
-
 	set Line1=!Line!
-
 	set line1=!line1:~0,9!
-
 	set line1=!line1:~2,7!
-
 	if !Line1!==version set Line=!Line:~0,-12!
-
 	echo !Line! >> ../../addons/pvr.iptvsimple/addon.xml 
-
 	)
-
 
 setlocal disabledelayedexpansion 
 
-
 REM ------------------------------------------------------------------------------
  
-
 copy ChangeLog ..\..\addons\pvr.vuplus\changelog.txt > NUL
 IF EXIST test.tmp del test.tmp
 
