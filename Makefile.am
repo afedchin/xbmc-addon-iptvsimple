@@ -11,7 +11,7 @@ install: all
 	mkdir -m 755 -p $(DESTDIR)@LIBDIR@/pvr.iptvsimple
 	mkdir -m 755 -p $(DESTDIR)@DATADIR@/pvr.iptvsimple
 	cp -r addons/pvr.iptvsimple .
-	$(STRIP) -s -x pvr.iptvsimple/$(ADDONNAME)
+	$(STRIP) -x pvr.iptvsimple/$(ADDONNAME)
 	cp -f pvr.iptvsimple/$(ADDONNAME) $(DESTDIR)@LIBDIR@/pvr.iptvsimple ; chmod 655 $(DESTDIR)@LIBDIR@/pvr.iptvsimple/$(ADDONNAME)
 	cp -r -f @abs_top_srcdir@/addons/pvr.iptvsimple/* $(DESTDIR)@DATADIR@/pvr.iptvsimple ; chmod -R o+rx $(DESTDIR)@DATADIR@/pvr.iptvsimple
 	rm -Rf pvr.iptvsimple
@@ -22,7 +22,7 @@ uninstall:
 
 dist-zip: all
 	cp -r addons/pvr.iptvsimple .
-	$(STRIP) -s -x pvr.iptvsimple/$(ADDONNAME)
+	$(STRIP) -x pvr.iptvsimple/$(ADDONNAME)
 	zip -9 -r ./pvr.iptvsimple.$(VERSION).zip pvr.iptvsimple --exclude \*.am \*.in \*Makefile \*.gitignore
 	rm -Rf pvr.iptvsimple
 
