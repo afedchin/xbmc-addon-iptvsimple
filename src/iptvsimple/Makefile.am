@@ -21,7 +21,7 @@ AM_CPPFLAGS = \
 
 INCLUDES = \
 	-I. \
-	-I$(top_srcdir)/include/xbmc -I$(top_srcdir)/src \
+	-I$(top_srcdir)/include -I$(top_srcdir)/include/xbmc -I$(top_srcdir)/src \
 	-DUSE_DEMUX
 
 EXTRA_DIST = \

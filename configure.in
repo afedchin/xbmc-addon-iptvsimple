@@ -97,5 +97,4 @@ AC_OUTPUT([Makefile
            addons/pvr.iptvsimple/Makefile
            addons/pvr.iptvsimple/addon.xml
            src/Makefile
-           src/rapidxml/Makefile
            src/iptvsimple/Makefile])
