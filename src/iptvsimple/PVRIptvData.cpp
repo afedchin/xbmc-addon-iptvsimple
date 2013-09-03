@@ -115,7 +115,7 @@ bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd)
   int iCount = 0;
   while(iCount < 3) // max 3 tries
   {
-    if ((iReaded = GetCachedFileContents(TVG_FILE_NAME, m_strXMLTVUrl, data)) != 0) 
+    if ((iReaded = GetCachedFileContents(TVG_FILE_NAME, m_strXMLTVUrl, data, g_bCacheEPG)) != 0) 
     {
       break;
     }
@@ -314,7 +314,7 @@ bool PVRIptvData::LoadPlayList(void)
   }
 
   CStdString strPlaylistContent;
-  if (!GetCachedFileContents(M3U_FILE_NAME, m_strM3uUrl, strPlaylistContent))
+  if (!GetCachedFileContents(M3U_FILE_NAME, m_strM3uUrl, strPlaylistContent, g_bCacheM3U))
   {
     XBMC->Log(LOG_ERROR, "Unable to load playlist file '%s':  file is missing or empty.", m_strM3uUrl.c_str());
     return false;
@@ -848,13 +848,15 @@ bool PVRIptvData::GzipInflate( const std::string& compressedBytes, std::string& 
   return true ;  
 }  
 
-int PVRIptvData::GetCachedFileContents(const std::string &strCachedName, const std::string &filePath, std::string &strContents)
+int PVRIptvData::GetCachedFileContents(const std::string &strCachedName, const std::string &filePath, 
+                                       std::string &strContents, const bool bUseCache /* false */)
 {
   bool bNeedReload = false;
   CStdString strCachedPath = GetUserFilePath(strCachedName);
   CStdString strFilePath = filePath;
 
-  if (XBMC->FileExists(strCachedPath, false)) 
+  // check cached file is exists
+  if (bUseCache && XBMC->FileExists(strCachedPath, false)) 
   {
     struct __stat64 statCached;
     struct __stat64 statOrig;
@@ -862,7 +864,7 @@ int PVRIptvData::GetCachedFileContents(const std::string &strCachedName, const s
     XBMC->StatFile(strCachedPath, &statCached);
     XBMC->StatFile(strFilePath, &statOrig);
 
-    bNeedReload = statCached.st_mtime < statOrig.st_mtime;
+    bNeedReload = statCached.st_mtime < statOrig.st_mtime || statOrig.st_mtime == 0;
   } 
   else 
   {
@@ -872,7 +874,9 @@ int PVRIptvData::GetCachedFileContents(const std::string &strCachedName, const s
   if (bNeedReload) 
   {
     GetFileContents(strFilePath, strContents);
-    if (strContents.length() > 0) 
+
+    // write to cache
+    if (bUseCache && strContents.length() > 0) 
     {
       void* fileHandle = XBMC->OpenFileForWrite(strCachedPath, true);
       if (fileHandle)
