@@ -97,9 +97,6 @@
     <ProjectReference Include="..\platform\platform.vcxproj">
       <Project>{fe4573f6-a794-4ad3-b37f-49e51f1140e6}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\rapidxml\rapidxml.vcxproj">
-      <Project>{4AF5EB04-009D-44AD-9AA2-36149DC2056B}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "platform", "platform\platform.vcxproj", "{FE4573F6-A794-4AD3-B37F-49E51F1140E6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "tinyxml\tinyxml.vcxproj", "{BDC7D21D-9FD9-41AA-BEC8-8B70E1448C50}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rapidxml", "rapidxml\rapidxml.vcxproj", "{4AF5EB04-009D-44AD-9AA2-36149DC2056B}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pvr.iptvsimple", "iptvsimple\xbmc-addon-iptvsimple.vcxproj", "{6C839B8E-2C7D-4725-8765-D6C0C10DBC06}"
 EndProject
 Global
@@ -19,14 +15,6 @@ Global
 		{FE4573F6-A794-4AD3-B37F-49E51F1140E6}.Debug|Win32.Build.0 = Debug|Win32
 		{FE4573F6-A794-4AD3-B37F-49E51F1140E6}.Release|Win32.ActiveCfg = Release|Win32
 		{FE4573F6-A794-4AD3-B37F-49E51F1140E6}.Release|Win32.Build.0 = Release|Win32
-		{BDC7D21D-9FD9-41AA-BEC8-8B70E1448C50}.Debug|Win32.ActiveCfg = Debug|Win32
-		{BDC7D21D-9FD9-41AA-BEC8-8B70E1448C50}.Debug|Win32.Build.0 = Debug|Win32
-		{BDC7D21D-9FD9-41AA-BEC8-8B70E1448C50}.Release|Win32.ActiveCfg = Release|Win32
-		{BDC7D21D-9FD9-41AA-BEC8-8B70E1448C50}.Release|Win32.Build.0 = Release|Win32
-		{4AF5EB04-009D-44AD-9AA2-36149DC2056B}.Debug|Win32.ActiveCfg = Debug|Win32
-		{4AF5EB04-009D-44AD-9AA2-36149DC2056B}.Debug|Win32.Build.0 = Debug|Win32
-		{4AF5EB04-009D-44AD-9AA2-36149DC2056B}.Release|Win32.ActiveCfg = Release|Win32
-		{4AF5EB04-009D-44AD-9AA2-36149DC2056B}.Release|Win32.Build.0 = Release|Win32
 		{6C839B8E-2C7D-4725-8765-D6C0C10DBC06}.Debug|Win32.ActiveCfg = Debug|Win32
 		{6C839B8E-2C7D-4725-8765-D6C0C10DBC06}.Debug|Win32.Build.0 = Debug|Win32
 		{6C839B8E-2C7D-4725-8765-D6C0C10DBC06}.Release|Win32.ActiveCfg = Release|Win32
