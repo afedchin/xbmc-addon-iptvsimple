@@ -56,6 +56,8 @@ std::string g_strLogoPath   = "";
 int         g_iEPGTimeShift = 0;
 int         g_iStartNumber  = 1;
 bool        g_bTSOverride   = true;
+bool        g_bCacheM3U     = false;
+bool        g_bCacheEPG     = false;
 
 extern std::string PathCombine(const std::string &strPath, const std::string &strFileName)
 {
@@ -94,6 +96,7 @@ void ADDON_ReadSettings(void)
   {
     iPathType = 1;
   }
+  g_bCacheM3U = iPathType == 1;
   CStdString strSettingName = iPathType ? "m3uUrl" : "m3uPath";
   if (XBMC->GetSetting(strSettingName, &buffer)) 
   {
@@ -111,6 +114,7 @@ void ADDON_ReadSettings(void)
   {
     iPathType = 1;
   }
+  g_bCacheEPG = iPathType == 1;
   strSettingName = iPathType ? "epgUrl" : "epgPath";
   if (XBMC->GetSetting(strSettingName, &buffer)) 
   {
