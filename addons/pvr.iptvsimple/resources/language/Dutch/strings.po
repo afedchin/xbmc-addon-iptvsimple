@@ -38,8 +38,8 @@ msgid ""
 msgstr "Dit is onstabiele software! De auteurs zijn op geen enkele manier aansprakelijk voor falen in afspelen, incorrecte EPG tijden, verspilde uren, of wel ongewenst effect dan ook."
 
 msgctxt "#30000"
-msgid "File Location"
-msgstr "Bestands Locatie"
+msgid "Location"
+msgstr "Locatie"
 
 msgctxt "#30001"
 msgid "Local Path (include Local Network)"
@@ -88,3 +88,7 @@ msgstr "Kanalen Logo's"
 msgctxt "#30031"
 msgid "Channels Logos Folder"
 msgstr "Kanalen Logo's Folder"
+
+msgctxt "#30032"
+msgid "Channels Logos Base URL"
+msgstr "Channels Logos Base URL"

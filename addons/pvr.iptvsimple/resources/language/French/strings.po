@@ -19,8 +19,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgctxt "#30000"
-msgid "File Location"
-msgstr "Emplacement du fichier"
+msgid "Location"
+msgstr "Emplacement"
 
 msgctxt "#30001"
 msgid "Local Path (include Local Network)"
@@ -73,3 +73,7 @@ msgstr "Logos des chaînes"
 msgctxt "#30031"
 msgid "Channels Logos Folder"
 msgstr "Répertoire des Logos de chaînes"
+
+msgctxt "#30032"
+msgid "Channels Logos Base URL"
+msgstr "Channels Logos Base URL"

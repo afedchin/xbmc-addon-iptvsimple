@@ -21,8 +21,8 @@ msgstr ""
 
 # settings labels
 msgctxt "#30000"
-msgid "File Location"
-msgstr "Datei Standort"
+msgid "Location"
+msgstr "Standort"
 
 msgctxt "#30001"
 msgid "Local Path (include Local Network)"
@@ -75,3 +75,7 @@ msgstr "Kanal-Logos"
 msgctxt "#30031"
 msgid "Channels Logos Folder"
 msgstr "Kanal-Logo-Ordner"
+
+msgctxt "#30032"
+msgid "Channels Logos Base URL"
+msgstr "Channels Logos Base URL"

@@ -122,7 +122,7 @@ bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd)
     XBMC->Log(LOG_ERROR, "Unable to load EPG file '%s':  file is missing or empty. :%dth try.", m_strXMLTVUrl.c_str(), ++iCount);
     if (iCount < 3)
     {
-      usleep(5 * 1000 * 1000); // sleep 5 sec before next try.
+      usleep(2 * 1000 * 1000); // sleep 2 sec before next try.
     }
   }
   
@@ -130,6 +130,8 @@ bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd)
   {
     XBMC->Log(LOG_ERROR, "Unable to load EPG file '%s':  file is missing or empty. After %d tries.", m_strXMLTVUrl.c_str(), iCount);
     m_bEGPLoaded = true;
+    m_iLastStart = iStart;
+    m_iLastEnd = iEnd;
     return false;
   }
 
@@ -283,6 +285,16 @@ bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd)
     GetNodeValue(pChannelNode, "category", strCategory);
     GetNodeValue(pChannelNode, "desc", strDesc);
 
+    CStdString strIconPath;
+    xml_node<> *pIconNode = pChannelNode->first_node("icon");
+    if (pIconNode != NULL)
+    {
+      if (!GetAttributeValue(pIconNode, "src", strIconPath)) 
+      {
+        strIconPath = "";
+      }
+    }
+
     PVRIptvEpgEntry entry;
     entry.iBroadcastId    = ++iBroadCastId;
     entry.iGenreType      = 0;
@@ -290,6 +302,7 @@ bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd)
     entry.strTitle        = strTitle;
     entry.strPlot         = strDesc;
     entry.strPlotOutline  = "";
+    entry.strIconPath     = strIconPath;
     entry.startTime       = iTmpStart;
     entry.endTime         = iTmpEnd;
     entry.strGenreString  = strCategory;
@@ -900,7 +913,7 @@ void PVRIptvData::ApplyChannelsLogos()
   for(channel = m_channels.begin(); channel < m_channels.end(); channel++)
   {
     channel->strLogoPath = PathCombine(m_strLogoPath, channel->strTvgLogo);
-    channel->strLogoPath.append(CHANNEL_LOGO_EXTENSION);
+    //channel->strLogoPath.append(CHANNEL_LOGO_EXTENSION);
   }
 }
 

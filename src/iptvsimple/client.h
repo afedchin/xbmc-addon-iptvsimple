@@ -27,7 +27,7 @@
 #include "libXBMC_pvr.h"
 #include "libXBMC_gui.h"
 
-#define PVR_CLIENT_VERSION     "0.1.3"
+#define PVR_CLIENT_VERSION     "1.9.3"
 #define M3U_FILE_NAME          "iptv.m3u.cache"
 #define TVG_FILE_NAME          "xmltv.xml.cache"
 

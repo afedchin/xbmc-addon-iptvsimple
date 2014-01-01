@@ -96,11 +96,24 @@ void ADDON_ReadSettings(void)
   {
     iPathType = 1;
   }
-  g_bCacheM3U = iPathType == 1;
-  CStdString strSettingName = iPathType ? "m3uUrl" : "m3uPath";
-  if (XBMC->GetSetting(strSettingName, &buffer)) 
+  if (iPathType)
   {
-    g_strM3UPath = buffer;
+    if (XBMC->GetSetting("m3uUrl", &buffer)) 
+    {
+      g_strM3UPath = buffer;
+    }
+    if (!XBMC->GetSetting("m3uCache", &g_bCacheM3U))
+    {
+      g_bCacheM3U = true;
+    }
+  }
+  else
+  {
+    if (XBMC->GetSetting("m3uPath", &buffer)) 
+    {
+      g_strM3UPath = buffer;
+    }
+    g_bCacheM3U = false;
   }
   if (g_strM3UPath == "") 
   {
@@ -114,29 +127,39 @@ void ADDON_ReadSettings(void)
   {
     iPathType = 1;
   }
-  g_bCacheEPG = iPathType == 1;
-  strSettingName = iPathType ? "epgUrl" : "epgPath";
-  if (XBMC->GetSetting(strSettingName, &buffer)) 
+  if (iPathType)
   {
-    g_strTvgPath = buffer;
+    if (XBMC->GetSetting("epgUrl", &buffer)) 
+    {
+      g_strTvgPath = buffer;
+    }
+    if (!XBMC->GetSetting("epgCache", &g_bCacheEPG))
+    {
+      g_bCacheEPG = true;
+    }
   }
-  // BUG! xbmc does not return slider value 
-  //float dTimeShift;
-  //if (XBMC->GetSetting("epgTimeShift", &dTimeShift))
-  //{
-  //  g_iEPGTimeShift = (int)(dTimeShift * 3600.0); // hours to seconds
-  //}
-  int itmpShift;
-  if (XBMC->GetSetting("epgTimeShift_", &itmpShift))
+  else
   {
-    itmpShift -= 12;
-    g_iEPGTimeShift = (int)(itmpShift * 3600.0); // hours to seconds
+    if (XBMC->GetSetting("epgPath", &buffer)) 
+    {
+      g_strTvgPath = buffer;
+    }
+    g_bCacheEPG = false;
+  }
+  float fShift;
+  if (XBMC->GetSetting("epgTimeShift", &fShift))
+  {
+    g_iEPGTimeShift = (int)(fShift * 3600.0); // hours to seconds
   }
   if (!XBMC->GetSetting("epgTSOverride", &g_bTSOverride))
   {
     g_bTSOverride = true;
   }
-  if (XBMC->GetSetting("logoPath", &buffer))
+  if (!XBMC->GetSetting("logoPathType", &iPathType)) 
+  {
+    iPathType = 1;
+  }
+  if (XBMC->GetSetting(iPathType ? "logoBaseUrl" : "logoPath", &buffer)) 
   {
     g_strLogoPath = buffer;
   }
