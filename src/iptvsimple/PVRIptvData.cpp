@@ -210,9 +210,18 @@ bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd)
     {
       continue;
     }
-    GetNodeValue(pChannelNode, "display-name", strName);
 
-    if (FindChannel(strId, strName) == NULL)
+    PVRIptvChannel *channel = NULL;
+    for (xml_node<> *pNameNode = pChannelNode->first_node("display-name"); pNameNode; pNameNode = pNameNode->next_sibling("display-name"))
+    {
+      strName = pNameNode->value();
+      channel = FindChannel(strId, strName);
+      if (channel)
+      {
+        break;
+      }
+    }
+    if (!channel)
     {
       continue;
     }
