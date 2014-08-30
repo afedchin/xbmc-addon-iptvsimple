@@ -47,6 +47,7 @@ struct PVRIptvEpgChannel
 {
   std::string                  strId;
   std::string                  strName;
+  std::string                  strIcon;
   std::vector<PVRIptvEpgEntry> epg;
 };
 
@@ -97,6 +98,7 @@ protected:
   virtual PVRIptvChannel      *FindChannel(const std::string &strId, const std::string &strName);
   virtual PVRIptvChannelGroup *FindGroup(const std::string &strName);
   virtual PVRIptvEpgChannel   *FindEpg(const std::string &strId);
+  virtual bool                 ApplyEpgIconForChannel(PVRIptvChannel *channel);
   virtual PVRIptvEpgChannel   *FindEpgForChannel(PVRIptvChannel &channel);
   virtual int                  ParseDateTime(CStdString strDate, bool iDateFormat = true);
   virtual bool                 GzipInflate( const std::string &compressedBytes, std::string &uncompressedBytes);
@@ -110,6 +112,7 @@ protected:
   virtual void *Process(void);
 
 private:
+  bool                              m_bUseEpgPaths;
   bool                              m_bTSOverride;
   bool                              m_bEGPLoaded;
   int                               m_iEPGTimeShift;

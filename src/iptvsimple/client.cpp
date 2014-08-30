@@ -58,6 +58,7 @@ int         g_iStartNumber  = 1;
 bool        g_bTSOverride   = true;
 bool        g_bCacheM3U     = false;
 bool        g_bCacheEPG     = false;
+bool        g_bUseEpgPaths  = false;
 
 extern std::string PathCombine(const std::string &strPath, const std::string &strFileName)
 {
@@ -126,6 +127,10 @@ void ADDON_ReadSettings(void)
   if (!XBMC->GetSetting("epgPathType", &iPathType)) 
   {
     iPathType = 1;
+  }
+  if (XBMC->GetSetting("epgPathOverride", &buffer))
+  {
+    g_bUseEpgPaths = buffer[0];
   }
   if (iPathType)
   {

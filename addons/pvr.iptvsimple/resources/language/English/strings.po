@@ -86,3 +86,7 @@ msgstr ""
 msgctxt "#30032"
 msgid "Channels Logos Base URL"
 msgstr ""
+
+msgctxt "#30033"
+msgid "Get Channels icon from EPG"
+msgstr ""
