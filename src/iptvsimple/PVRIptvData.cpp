@@ -71,6 +71,7 @@ inline bool GetAttributeValue(const xml_node<Ch> * pNode, const char* strAttribu
 
 PVRIptvData::PVRIptvData(void)
 {
+  m_bUseEpgPaths  = g_bUseEpgPaths;
   m_strXMLTVUrl   = g_strTvgPath;
   m_strM3uUrl     = g_strM3UPath;
   m_strLogoPath   = g_strLogoPath;
@@ -206,6 +207,8 @@ bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd)
   {
     CStdString strName;
     CStdString strId;
+    CStdString strIcon;
+
     if(!GetAttributeValue(pChannelNode, "id", strId))
     {
       continue;
@@ -226,9 +229,19 @@ bool PVRIptvData::LoadEPG(time_t iStart, time_t iEnd)
       continue;
     }
 
+    xml_node<> *pIconNode = pChannelNode->first_node("icon");
+    if (pIconNode != NULL)
+    {
+      if (!GetAttributeValue(pIconNode, "src", strIcon))
+      {
+        strIcon = "";
+      }
+    }
+
     PVRIptvEpgChannel epgChannel;
     epgChannel.strId = strId;
     epgChannel.strName = strName;
+    epgChannel.strIcon = strIcon;
 
     m_epg.push_back(epgChannel);
   }
@@ -770,6 +783,29 @@ PVRIptvEpgChannel * PVRIptvData::FindEpg(const std::string &strId)
   return NULL;
 }
 
+bool PVRIptvData::ApplyEpgIconForChannel(PVRIptvChannel *channel)
+{
+  bool ret = false;
+  vector<PVRIptvEpgChannel>::iterator it;
+  for(it = m_epg.begin(); it < m_epg.end(); it++)
+  {
+    CStdString strName = it->strName;
+    strName.Replace(' ', '_');
+
+    if ((it->strId == channel->strTvgId) ||
+        (it->strName == channel->strChannelName) ||
+        (strName == channel->strTvgName) ||
+        (it->strName == channel->strTvgName))
+    {
+      // epg icon path found
+      channel->strLogoPath = it->strIcon;
+      return false;
+    }
+  }
+  // epg icon path was not found
+  return true;
+}
+
 PVRIptvEpgChannel * PVRIptvData::FindEpgForChannel(PVRIptvChannel &channel)
 {
   vector<PVRIptvEpgChannel>::iterator it;
@@ -915,14 +951,22 @@ int PVRIptvData::GetCachedFileContents(const std::string &strCachedName, const s
 
 void PVRIptvData::ApplyChannelsLogos()
 {
-  if (m_strLogoPath.IsEmpty())
+  if (m_strLogoPath.IsEmpty() || !m_bUseEpgPaths)
     return;
+
+  if (true == m_bUseEpgPaths) {
+    if(!LoadEPG(m_iLastStart, m_iLastEnd))
+      return;
+  }
 
   vector<PVRIptvChannel>::iterator channel;
   for(channel = m_channels.begin(); channel < m_channels.end(); channel++)
   {
     channel->strLogoPath = PathCombine(m_strLogoPath, channel->strTvgLogo);
     //channel->strLogoPath.append(CHANNEL_LOGO_EXTENSION);
+    if (m_bUseEpgPaths) {
+      ApplyEpgIconForChannel(&(*channel));
+    }
   }
 }
 
