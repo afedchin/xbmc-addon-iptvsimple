@@ -336,9 +336,25 @@ bool PVRIptvData::LoadPlayList(void)
   }
 
   CStdString strPlaylistContent;
-  if (!GetCachedFileContents(M3U_FILE_NAME, m_strM3uUrl, strPlaylistContent, g_bCacheM3U))
+
+  int iReaded = 0;
+  int iCount = 0;
+  while(iCount < 3) // max 3 tries
   {
-    XBMC->Log(LOG_ERROR, "Unable to load playlist file '%s':  file is missing or empty.", m_strM3uUrl.c_str());
+    if ((iReaded = GetCachedFileContents(M3U_FILE_NAME, m_strM3uUrl, strPlaylistContent, g_bCacheM3U)) != 0)
+    {
+      break;
+    }
+    XBMC->Log(LOG_ERROR, "Unable to load playlist file '%s':  file is missing or empty. :%dth try.", m_strM3uUrl.c_str(), ++iCount);
+    if (iCount < 3)
+    {
+      usleep(2 * 1000 * 1000); // sleep 2 sec before next try.
+    }
+  }
+
+  if (iReaded == 0)
+  {
+    XBMC->Log(LOG_ERROR, "Unable to load playlist file '%s':  file is missing or empty. After %d tries.", m_strM3uUrl.c_str(), iCount);
     return false;
   }
 
