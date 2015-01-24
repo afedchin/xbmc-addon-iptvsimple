@@ -26,3 +26,24 @@
 ipch*/
 /project/VS2010Express/pvr.iptvsimple.*.zip
 /project/VS2010Express/*.metaproj*
+
+# Build files made by automake/autoconf.
+Makefile
+Makefile.in
+/aclocal.m4
+/autom4te.cache/
+/config.*
+/configure
+/depcomp
+/install-sh
+/libtool
+/ltmain.sh
+/m4/
+/missing
+/stamp-h?
+.deps/
+.dirstamp
+.libs/
+*.l[ao]
+*~
+/autotools
